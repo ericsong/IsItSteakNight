@@ -1,0 +1,26 @@
+{
+  "name": "IsItSteakNight",
+  "version": "0.0.0",
+  "description": "RU Dining Hall food checker",
+  "main": "run.js",
+  "dependencies": {
+    "babel": "^5.8.21",
+    "request": "^2.60.0",
+    "mongoose": "^4.1.4",
+    "async": "^1.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericsong/nasus.git"
+  },
+  "author": "Eric Song",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ericsong/IsItSteakNight/issues"
+  },
+  "homepage": "https://github.com/IsItSteakNight/nasus"
+}
