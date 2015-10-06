@@ -25,7 +25,9 @@ Menu.find(function(err, docs) {
             for(let meal of busch_menu) {
                 if(meal.genres) {
                     for(let genre of meal.genres) {
-                        console.log(genre)
+                        for(let item of genre.items) {
+                            console.log(genre.genre_name + ': ' + item)
+                        }
                     }
                 }
             }
