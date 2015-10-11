@@ -128,6 +128,21 @@ function deepCompare () {
   return true;
 }
 
+function menuDeepCompare(menu1, menu2) {
+    var menu1copy = JSON.parse(JSON.stringify(menu1))
+    var menu2copy = JSON.parse(JSON.stringify(menu2))
+
+    for(var i = 0; i < menu1copy.length; i++) {
+        delete menu1copy[i].date;
+    }
+
+    for(var i = 0; i < menu2copy.length; i++) {
+        delete menu2copy[i].date;
+    }
+
+    return deepCompare(menu1copy, menu2copy);
+}
+
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', function(error, response, body) {
     var menudata = JSON.parse(body);
     Menu.findOne({}, {}, {sort: {'time': -1} }, function(err, doc) {
@@ -139,15 +154,7 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', function(error, res
             return;
         }
 
-        var isSame;
-
-        if(deepCompare(menudata, doc.data)) {
-            isSame = true;
-        } else {
-            isSame = false;
-        }
-
-        if(!isSame) {
+        if(!menuDeepCompare(menudata, doc.data)) {
             var newMenu = new Menu({data: JSON.parse(body)});
 
             newMenu.save(function() {
