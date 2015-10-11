@@ -150,10 +150,13 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', function(error, res
         if(!isSame) {
             var newMenu = new Menu({data: JSON.parse(body)});
 
-            newMenu.save()
-            console.log('saved menu');
+            newMenu.save(function() {
+                console.log('saved menu');
+                mongoose.connection.close()
+            })
         } else {
             console.log('menu already stored');
+            mongoose.connection.close()
         }
     })
 });
