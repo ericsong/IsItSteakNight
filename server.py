@@ -19,7 +19,12 @@ def updateSteakCheck():
 
 @app.route('/')
 def root():
-    return render_template('home.html', isSteakNight=isSteakNight)
+    if isSteakNight:
+        display_str = "YES"
+    else:
+        display_str = "NO"
+
+    return render_template('home.html', isSteakNight=display_str)
 
 if __name__ == '__main__':
     updateSteakCheck()
