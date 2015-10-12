@@ -1,5 +1,5 @@
 import threading
-from flask import Flask
+from flask import Flask, render_template
 from analyzer import isTonightSteakNight
 
 app = Flask(__name__)
@@ -19,9 +19,9 @@ def updateSteakCheck():
 
 @app.route('/')
 def root():
-    return str(isSteakNight)
+    return render_template('home.html', isSteakNight=isSteakNight)
 
 if __name__ == '__main__':
     updateSteakCheck()
     set_interval(updateSteakCheck, 60)
-    app.run()
+    app.run(debug=True)
