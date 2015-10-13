@@ -1,10 +1,12 @@
 import threading
-from flask import Flask
+from flask import Flask, render_template
 from analyzer import isTonightSteakNight
 
 app = Flask(__name__)
 
-isSteakNight = False
+status = {
+    'isSteakNight': False
+}
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -15,13 +17,18 @@ def set_interval(func, sec):
     return t
 
 def updateSteakCheck():
-    isSteakNight = isTonightSteakNight()
+    status['isSteakNight'] = isTonightSteakNight()
 
 @app.route('/')
 def root():
-    return str(isSteakNight)
+    if status['isSteakNight']:
+        display_str = "YES"
+    else:
+        display_str = "NO"
+
+    return render_template('home.html', isSteakNight=display_str)
 
 if __name__ == '__main__':
     updateSteakCheck()
     set_interval(updateSteakCheck, 60)
-    app.run(host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')
