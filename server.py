@@ -4,7 +4,9 @@ from analyzer import isTonightSteakNight
 
 app = Flask(__name__)
 
-isSteakNight = False
+status = {
+    'isSteakNight': False
+}
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -15,11 +17,11 @@ def set_interval(func, sec):
     return t
 
 def updateSteakCheck():
-    isSteakNight = isTonightSteakNight()
+    status['isSteakNight'] = isTonightSteakNight()
 
 @app.route('/')
 def root():
-    if isSteakNight:
+    if status['isSteakNight']:
         display_str = "YES"
     else:
         display_str = "NO"
