@@ -38,14 +38,18 @@ def checkIfMenuHasSteak(menu):
     hasSteak = False
     items = []
 
-    for item in menu['data']:
-        for meal in item['meals']:
+    for dininghall in menu['data']:
+        for meal in dininghall['meals']:
             if(meal['meal_avail']):
                 for genre in meal['genres']:
                     for item in genre['items']:
                         if isSteakItem(genre['genre_name'], item):
                             hasSteak = True
-                            items.append(item)
+                            items.append({
+                                'dininghall': dininghall['location_name'],
+                                'genre': genre['genre_name'],
+                                'item': item
+                            })
 
     #return items here
     return (hasSteak, items)
