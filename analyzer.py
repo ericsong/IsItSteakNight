@@ -36,6 +36,7 @@ def isSteakItem(genre, item):
 
 def checkIfMenuHasSteak(menu):
     hasSteak = False
+    items = []
 
     for item in menu['data']:
         for meal in item['meals']:
@@ -44,8 +45,9 @@ def checkIfMenuHasSteak(menu):
                     for item in genre['items']:
                         if isSteakItem(genre['genre_name'], item):
                             hasSteak = True
-                            break
+                            items.append(item)
 
+    #return items here
     return hasSteak
 
 def isTonightSteakNight():
