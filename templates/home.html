@@ -7,13 +7,18 @@
 
             h1 {
                 text-align: center;
+              }
+
+            h3 {
+                text-align: center;
             }
         </style>
     </head>
     <body>
         <h1> IS IT STEAK NIGHT?? </h1>
         <h2> {{ isSteakNight }} <h2>
-
-            <h3> {{ items }} </h3>
+        {% for item in items %}
+        <h3> {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} </h3>
+        {% endfor %}
     </body>
 </html>
