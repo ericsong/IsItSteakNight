@@ -17,7 +17,9 @@ def set_interval(func, sec):
     return t
 
 def updateSteakCheck():
-    status['isSteakNight'] = isTonightSteakNight()
+    isSteakNight, items = isTonightSteakNight()
+    status['isSteakNight'] = isSteakNight
+    status['items'] = items
 
 @app.route('/')
 def root():
@@ -26,7 +28,7 @@ def root():
     else:
         display_str = "NO"
 
-    return render_template('home.html', isSteakNight=display_str)
+    return render_template('home.html', isSteakNight=display_str, items=status['items'])
 
 if __name__ == '__main__':
     updateSteakCheck()

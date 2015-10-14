@@ -48,13 +48,11 @@ def checkIfMenuHasSteak(menu):
                             items.append(item)
 
     #return items here
-    return hasSteak
+    return (hasSteak, items)
 
 def isTonightSteakNight():
     latestMenu = menus.find().sort([("time", pymongo.DESCENDING)])[0]
     unix_time = latestMenu['data'][0]['date'] / 1000
     menutime = time.localtime(unix_time)
     date_string = time.strftime("%B %d, %Y",  menutime)
-    hasSteak = checkIfMenuHasSteak(latestMenu)
-
-    return hasSteak
+    return checkIfMenuHasSteak(latestMenu)
