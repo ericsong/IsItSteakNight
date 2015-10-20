@@ -18,7 +18,7 @@
         <h1> IS IT STEAK NIGHT?? </h1>
         <h2> {{ isSteakNight }} <h2>
         {% for item in items %}
-        <h3> {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} </h3>
+        <h3> {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}</h3>
         {% endfor %}
     </body>
 </html>

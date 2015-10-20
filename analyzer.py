@@ -50,6 +50,7 @@ def checkIfMenuHasSteak(menu):
                             hasSteak = True
                             items.append({
                                 'dininghall': dininghall['location_name'],
+                                'meal': meal['meal_name'],
                                 'genre': genre['genre_name'],
                                 'item': item
                             })
