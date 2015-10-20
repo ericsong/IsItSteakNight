@@ -25,7 +25,7 @@ def validGenre(genre):
 
 def miscFlags(item):
     item_lower = item.lower()
-    if "philly" in item_lower or "tuna" in item_lower:
+    if "philly" in item_lower or "tuna" in item_lower or "sandwich" in item_lower:
         return False
 
     return True
