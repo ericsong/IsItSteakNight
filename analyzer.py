@@ -1,5 +1,8 @@
 import time
 import string
+import json
+import requests
+import sys
 import psycopg2
 import pymongo
 from pymongo import MongoClient
@@ -38,7 +41,7 @@ def checkIfMenuHasSteak(menu):
     hasSteak = False
     items = []
 
-    for dininghall in menu['data']:
+    for dininghall in menu:
         for meal in dininghall['meals']:
             if(meal['meal_avail']):
                 for genre in meal['genres']:
@@ -54,9 +57,14 @@ def checkIfMenuHasSteak(menu):
     #return items here
     return (hasSteak, items)
 
-def isTonightSteakNight():
-    latestMenu = menus.find().sort([("time", pymongo.DESCENDING)])[0]
-    unix_time = latestMenu['data'][0]['date'] / 1000
+def isTonightSteakNight(queryDatabase=False):
+    if queryDatabase:
+        latestMenu = menus.find().sort([("time", pymongo.DESCENDING)])[0]['data']
+    else:
+        r = requests.get('https://rumobile.rutgers.edu/1/rutgers-dining.txt')
+        latestMenu = json.loads(r.text)
+
+    unix_time = latestMenu[0]['date'] / 1000
     menutime = time.localtime(unix_time)
     date_string = time.strftime("%B %d, %Y",  menutime)
     return checkIfMenuHasSteak(latestMenu)
