@@ -1,8 +1,8 @@
 import threading
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from analyzer import isTonightSteakNight
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 status = {
     'isSteakNight': False
@@ -17,7 +17,13 @@ def set_interval(func, sec):
     return t
 
 def updateSteakCheck():
-    status['isSteakNight'] = isTonightSteakNight()
+    isSteakNight, items = isTonightSteakNight()
+    status['isSteakNight'] = isSteakNight
+    status['items'] = items
+
+@app.route('/static/<path:path>')
+def send_static(path):
+      return send_from_directory('static', path)
 
 @app.route('/')
 def root():
@@ -26,7 +32,7 @@ def root():
     else:
         display_str = "NO"
 
-    return render_template('home.html', isSteakNight=display_str)
+    return render_template('home.html', isSteakNight=display_str, items=status['items'])
 
 if __name__ == '__main__':
     updateSteakCheck()

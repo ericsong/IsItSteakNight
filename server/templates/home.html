@@ -1,5 +1,6 @@
 <html>
-    <head>
+  <head>
+    <link rel="shortcut icon" href="/media/grillmeat-256.png">
         <style>
             h2 {
                 text-align: center;
@@ -7,11 +8,29 @@
 
             h1 {
                 text-align: center;
+              }
+
+            h3 {
+                text-align: center;
             }
-        </style>
+          </style>
+          <script src="/js/tracking.js"></script>
     </head>
     <body>
-        <h2> IS IT STEAK NIGHT?? </h2>
-        <h1> {{ isSteakNight }} <h1>
+      <div style="text-align: center">
+        <div style="margin: 0 auto; display: inline-block;">
+            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+            <h1 style="float: left;">&nbsp IS IT STEAK NIGHT?? &nbsp</h1>
+            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+            <div style="clear: both;"></div>
+          </div>
+        </div>
+        <h2> {{ isSteakNight }} <h2>
+        {% for item in items %}
+        <h3> {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}</h3>
+        {% endfor %}
+
     </body>
 </html>
