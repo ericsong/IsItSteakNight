@@ -1,3 +1,8 @@
+/*
+ * Deletes all duplicate menus in database
+ *
+ */
+
 var mongoose = require('mongoose');
 var request = require('request');
 
