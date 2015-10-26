@@ -12,6 +12,15 @@
 
             h3 {
                 text-align: center;
+              }
+
+            form {
+              text-align: center;
+              display: inline-block;
+              }
+
+              form input {
+                width: 80%;
             }
           </style>
           <script src="/js/tracking.js"></script>
@@ -32,5 +41,12 @@
         <h3> {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}</h3>
         {% endfor %}
 
+        <div style="text-align: center">
+        <form action="POST">
+          <p>Enter your email if you want to get notified when it's steak night:</p>
+          <input type="text" name="email">
+          <button type="submit"> Sign up! </button>
+        </form>
+      </div>
     </body>
 </html>
