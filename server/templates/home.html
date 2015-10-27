@@ -1,52 +1,36 @@
 <html>
-  <head>
-    <link rel="shortcut icon" href="/media/grillmeat-256.png">
-        <style>
-            h2 {
-                text-align: center;
-            }
-
-            h1 {
-                text-align: center;
-              }
-
-            h3 {
-                text-align: center;
-              }
-
-            form {
-              text-align: center;
-              display: inline-block;
-              }
-
-              form input {
-                width: 80%;
-            }
-          </style>
-          <script src="/js/tracking.js"></script>
+    <head>
+        <link rel="shortcut icon" href="/media/grillmeat-256.png">
+        <link rel="stylesheet" type="text/css" href="/css/stylesheet.css">
+        <script src="/js/tracking.js"></script>
     </head>
+
     <body>
-      <div style="text-align: center">
-        <div style="margin: 0 auto; display: inline-block;">
-            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
-            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
-            <h1 style="float: left;">&nbsp IS IT STEAK NIGHT?? &nbsp</h1>
-            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
-            <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
-            <div style="clear: both;"></div>
-          </div>
+        <div style="text-align: center">
+            <div style="margin: 0 auto; display: inline-block;">
+                <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+                <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+                <h1 style="float: left;">&nbsp IS IT STEAK NIGHT?? &nbsp</h1>
+                <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+                <img src="/media/grillmeat-256.png" style="margin-top: 23px; margin-bot: 25px; width:35px; float: left;">
+                <div style="clear: both;"></div>
+            </div>
         </div>
-        <h1> {{ isSteakNight }} <h1>
+
+        <h1> {{ isSteakNight }} </h1>
+
         {% for item in items %}
-        <h3> {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}</h3>
+        <h3>
+            {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}
+        </h3>
         {% endfor %}
 
         <div style="text-align: center">
-        <form action="/subscribe" method="POST">
-          <p>Enter your email if you want to get notified when it's steak night:</p>
-          <input type="text" name="email">
-          <button type="submit"> Sign up! </button>
-        </form>
-      </div>
+            <form action="/subscribe" method="POST">
+                <p>Enter your email if you want to get notified when it's steak night:</p>
+                <input type="text" name="email">
+                <button type="submit"> Sign up! </button>
+            </form>
+        </div>
     </body>
 </html>
