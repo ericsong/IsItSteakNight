@@ -77,8 +77,20 @@ function checkIfMenuHasSteak(menu) {
     return items;
 }
 
-$.get('/MenuData', function(data) {
-    var menu = data.menu;
+$(document).ready(function() {
+    $.get('/MenuData', function(data) {
+        var menu = data.menu;
 
-    console.log(checkIfMenuHasSteak(menu));
-})
+        var steakItems = checkIfMenuHasSteak(menu);
+        var container = $($('.items-container')[0]);
+        container.empty();
+
+        for(var i = 0; i < steakItems.length; i++) {
+            var item = steakItems[i];
+
+            var outputText = item.dininghall + " is serving ... " + item.genre +
+                             ": " + item.item + " for " + item.meal;
+            container.append($("<h3></h3").text(outputText));     
+        }
+    })
+});
