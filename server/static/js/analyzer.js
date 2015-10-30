@@ -86,6 +86,7 @@ $(document).ready(function() {
         function(e){
             if(e.which == 13) {
                 currentQuery = $('#item-desc').text();
+                $('#email-query').text(currentQuery.toUpperCase());
                 setNewItems(currentQuery);
 
                 return false;
@@ -94,6 +95,8 @@ $(document).ready(function() {
             }
         }
     );
+
+    $('#item-desc').focus();
 
     $.get('/MenuData', function(data) {
         menu = data.menu;
