@@ -44,14 +44,30 @@ function checkIfMenuHasSteak(menu) {
     var hasSteak = false;
     var items = [];
 
-    for(var dininghall of menu) {
-        for(var meal of dininghall.meals) {
+    for(var dininghall in menu) {
+        if(!menu.hasOwnProperty(dininghall)) {
+            continue;
+        }
+
+        for(var meal in dininghall.meals) {
+            if(!dininghall.meals.hasOwnProperty(meal)) {
+                continue;
+            }
+
             if(!meal.meal_avail) {
                 return items;
             }
 
-            for(var genre of meal.genres) {
+            for(var genre in meal.genres) {
+                if(!meal.genres.hasOwnProperty(genre)) {
+                    continue;
+                }
+
                 for(var item of genre.items) {
+                    if(!genre.items.hasOwnProperty(item)) {
+                        continue;
+                    }
+
                     if(isSteakItem(genre.genre_name, item)) {
                         hasSteak = true;
 
