@@ -2,7 +2,9 @@
     <head>
         <link rel="shortcut icon" href="/media/grillmeat-256.png">
         <link rel="stylesheet" type="text/css" href="/css/stylesheet.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="/js/tracking.js"></script>
+        <script src="/js/analyzer.js"></script>
     </head>
 
     <body>
@@ -17,13 +19,15 @@
             </div>
         </div>
 
-        <h1> {{ isSteakNight }} </h1>
+        <h1 class="isSteakNight"> {{ isSteakNight }} </h1>
 
-        {% for item in items %}
-        <h3>
-            {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}
-        </h3>
-        {% endfor %}
+        <div class="items-container">
+            {% for item in items %}
+            <h3>
+                {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}
+            </h3>
+            {% endfor %}
+        </div>
 
         <div style="text-align: center">
             <form action="/subscribe" method="POST">
