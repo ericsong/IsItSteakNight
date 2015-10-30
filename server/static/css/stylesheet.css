@@ -18,3 +18,11 @@ form {
 form input {
     width: 80%;
 }
+
+.item-desc-container {
+    max-width: 500px;
+}
+
+span {
+    border: solid 1px black;
+}

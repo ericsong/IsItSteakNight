@@ -78,6 +78,17 @@ function checkIfMenuHasSteak(menu) {
 }
 
 $(document).ready(function() {
+    $("#item-desc").keypress(
+        function(e){
+            if(e.which == 13) {
+                console.log($('#item-desc').text());
+                return false;
+            } else {
+                return true;
+            }
+        }
+    );
+
     $.get('/MenuData', function(data) {
         var menu = data.menu;
 
@@ -98,5 +109,5 @@ $(document).ready(function() {
         } else {
             $($('.isSteakNight')[0]).text("YES");
         }
-    })
+    });
 });
