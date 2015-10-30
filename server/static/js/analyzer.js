@@ -92,5 +92,11 @@ $(document).ready(function() {
                              ": " + item.item + " for " + item.meal;
             container.append($("<h3></h3").text(outputText));     
         }
+
+        if(steakItems.length == 0) {
+            $($('.isSteakNight')[0]).text("NO");
+        } else {
+            $($('.isSteakNight')[0]).text("YES");
+        }
     })
 });
