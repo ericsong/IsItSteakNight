@@ -15,9 +15,9 @@ function miscFlags(item) {
     var item_lower = item.toLowerCase();
 
     if(
-        item_lower.indexOf("philly") > 0 ||
-        item_lower.indexOf("tuna") > 0 ||
-        item_lower.indexOf("sandwhich") > 0
+        item_lower.indexOf("philly") !== -1 ||
+        item_lower.indexOf("tuna") !== -1 ||
+        item_lower.indexOf("sandwhich") !== -1
     ) {
         return false;
     }
@@ -29,7 +29,7 @@ function isSteakItem(genre, item) {
     var item_lower = item.toLowerCase();
 
     if(
-        item_lower.indexOf("steakk") > 0 &&
+        item_lower.indexOf("steak") !== -1 &&
         validGenre(genre) &&
         miscFlags(item)
     ) {
@@ -44,29 +44,20 @@ function checkIfMenuHasSteak(menu) {
     var hasSteak = false;
     var items = [];
 
-    for(var dininghall in menu) {
-        if(!menu.hasOwnProperty(dininghall)) {
-            continue;
-        }
+    for(var i = 0; i < menu.length; i++) {
+        var dininghall = menu[i];
 
-        for(var meal in dininghall.meals) {
-            if(!dininghall.meals.hasOwnProperty(meal)) {
-                continue;
-            }
-
+        for(var j = 0; j < dininghall.meals.length; j++) {
+            var meal = dininghall.meals[j];
             if(!meal.meal_avail) {
-                return items;
+                break;
             }
 
-            for(var genre in meal.genres) {
-                if(!meal.genres.hasOwnProperty(genre)) {
-                    continue;
-                }
+            for(var k = 0; k < meal.genres.length; k++) {
+                var genre = meal.genres[k];
 
-                for(var item of genre.items) {
-                    if(!genre.items.hasOwnProperty(item)) {
-                        continue;
-                    }
+                for(var l = 0; l < genre.items.length; l++) {
+                    var item = genre.items[l];
 
                     if(isSteakItem(genre.genre_name, item)) {
                         hasSteak = true;
@@ -85,3 +76,9 @@ function checkIfMenuHasSteak(menu) {
 
     return items;
 }
+
+$.get('/MenuData', function(data) {
+    var menu = data.menu;
+
+    console.log(checkIfMenuHasSteak(menu));
+})
