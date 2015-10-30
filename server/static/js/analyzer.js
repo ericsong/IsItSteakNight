@@ -30,7 +30,7 @@ function isMatchingItem(genre, item, query) {
     var query_lower = query.toLowerCase();
 
     if(
-        item_lower.indexOf(query) !== -1 &&
+        item_lower.indexOf(query_lower) !== -1 &&
         validGenre(genre) &&
         miscFlags(item)
     ) {
@@ -79,10 +79,15 @@ function getMatchingItems(menu, query) {
 }
 
 $(document).ready(function() {
+    var menu = null;
+    var currentQuery = "steak";
+
     $("#item-desc").keypress(
         function(e){
             if(e.which == 13) {
-                console.log($('#item-desc').text());
+                currentQuery = $('#item-desc').text();
+                setNewItems(currentQuery);
+
                 return false;
             } else {
                 return true;
@@ -91,24 +96,36 @@ $(document).ready(function() {
     );
 
     $.get('/MenuData', function(data) {
-        var menu = data.menu;
+        menu = data.menu;
 
-        var steakItems = getMatchingItems(menu, "steak");
+        setNewItems("steak");
+    });
+
+    function setNewItems(query) {
+        if(!menu) {
+            console.log('menu not downloaded yet');
+            return false;
+        }
+
+        var items = getMatchingItems(menu, query);
         var container = $($('.items-container')[0]);
         container.empty();
 
-        for(var i = 0; i < steakItems.length; i++) {
-            var item = steakItems[i];
+        console.log(items);
+        console.log(query);
+        console.log(menu);
+        for(var i = 0; i < items.length; i++) {
+            var item = items[i];
 
             var outputText = item.dininghall + " is serving ... " + item.genre +
                              ": " + item.item + " for " + item.meal;
             container.append($("<h3></h3").text(outputText));     
         }
 
-        if(steakItems.length == 0) {
+        if(items.length == 0) {
             $($('.isSteakNight')[0]).text("NO");
         } else {
             $($('.isSteakNight')[0]).text("YES");
         }
-    });
+    }
 });

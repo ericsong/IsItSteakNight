@@ -23,6 +23,10 @@ form input {
     max-width: 500px;
 }
 
+#item-desc {
+    text-transform: uppercase;
+}
+
 span {
     border: solid 1px black;
 }
