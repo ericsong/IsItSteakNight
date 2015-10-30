@@ -25,11 +25,12 @@ function miscFlags(item) {
     return true;
 }
 
-function isSteakItem(genre, item) {
+function isMatchingItem(genre, item, query) {
     var item_lower = item.toLowerCase();
+    var query_lower = query.toLowerCase();
 
     if(
-        item_lower.indexOf("steak") !== -1 &&
+        item_lower.indexOf(query) !== -1 &&
         validGenre(genre) &&
         miscFlags(item)
     ) {
@@ -40,7 +41,7 @@ function isSteakItem(genre, item) {
 }
 
 //rename this to get steak items from menu
-function checkIfMenuHasSteak(menu) {
+function getMatchingItems(menu, query) {
     var hasSteak = false;
     var items = [];
 
@@ -59,7 +60,7 @@ function checkIfMenuHasSteak(menu) {
                 for(var l = 0; l < genre.items.length; l++) {
                     var item = genre.items[l];
 
-                    if(isSteakItem(genre.genre_name, item)) {
+                    if(isMatchingItem(genre.genre_name, item, query)) {
                         hasSteak = true;
 
                         items.push({
@@ -92,7 +93,7 @@ $(document).ready(function() {
     $.get('/MenuData', function(data) {
         var menu = data.menu;
 
-        var steakItems = checkIfMenuHasSteak(menu);
+        var steakItems = getMatchingItems(menu, "steak");
         var container = $($('.items-container')[0]);
         container.empty();
 
