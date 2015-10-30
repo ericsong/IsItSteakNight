@@ -104,8 +104,8 @@ $(document).ready(function() {
                 email:  $('#email-input').val(),
                 query: currentQuery
             },
-            success: function() {
-                console.log('success!');
+            success: function(data) {
+                console.log(data);
             }
         });
 
