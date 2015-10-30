@@ -12,6 +12,16 @@ db = client.isitsteaknight
 
 menus = db.menus
 
+def getMenu(queryDatabase = False):
+    if queryDatabase:
+        latestMenu = menus.find().sort([("time", pymongo.DESCENDING)])[0]['data']
+    else:
+        r = requests.get('https://rumobile.rutgers.edu/1/rutgers-dining.txt')
+        latestMenu = json.loads(r.text)
+
+    print(latestMenu)
+    return latestMenu
+
 def validGenre(genre):
     genre_lower = genre.lower()
     if (

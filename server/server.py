@@ -1,6 +1,6 @@
 import threading
 from flask import Flask, render_template, send_from_directory, request, jsonify
-from analyzer import isTonightSteakNight
+from analyzer import isTonightSteakNight, getMenu
 
 app = Flask(__name__, static_url_path='')
 
@@ -39,6 +39,10 @@ def addSubscriber():
     email = request.form.get('email')
 
     return jsonify(message="success")
+
+@app.route('/MenuData')
+def sendMenuData():
+    return jsonify(menu=getMenu())
 
 if __name__ == '__main__':
     updateSteakCheck()
