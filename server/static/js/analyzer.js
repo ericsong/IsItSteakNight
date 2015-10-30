@@ -96,6 +96,22 @@ $(document).ready(function() {
         }
     );
 
+    $('form').submit(function(e) {
+        $.ajax({
+            url: '/subscribe',
+            method: 'POST',
+            data: {
+                email:  $('#email-input').val(),
+                query: currentQuery
+            },
+            success: function() {
+                console.log('success!');
+            }
+        });
+
+        return false;
+    });
+
     $('#item-desc').focus();
 
     $.get('/MenuData', function(data) {
@@ -114,9 +130,6 @@ $(document).ready(function() {
         var container = $($('.items-container')[0]);
         container.empty();
 
-        console.log(items);
-        console.log(query);
-        console.log(menu);
         for(var i = 0; i < items.length; i++) {
             var item = items[i];
 

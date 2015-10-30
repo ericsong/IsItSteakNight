@@ -37,7 +37,9 @@ def root():
 @app.route('/subscribe', methods=['POST'])
 def addSubscriber():
     email = request.form.get('email')
+    query = request.form.get('query')
 
+    print(email, query)
     return jsonify(message="success")
 
 @app.route('/MenuData')
