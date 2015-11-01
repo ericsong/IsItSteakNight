@@ -51,7 +51,7 @@ function getMatchingItems(menu, query) {
         for(var j = 0; j < dininghall.meals.length; j++) {
             var meal = dininghall.meals[j];
             if(!meal.meal_avail) {
-                break;
+                continue;
             }
 
             for(var k = 0; k < meal.genres.length; k++) {
