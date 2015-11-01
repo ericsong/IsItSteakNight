@@ -41,26 +41,19 @@ function sendEmails(items, emails, query) {
         html += bold(item.item) + " is being served at " + bold(item.dininghall) + " for " + bold(item.meal)
     }
 
-    let sendbox = []
+    let email = new sendgrid.Email({
+        from: "admin@isitsteaknight.com",
+        subject: subject,
+        html: html
+    })
+    email.setTos(emails)
+    email.setFrom('IsItSteakNight')
 
-    for(let email of emails) {
-        let sendmail = new sendgrid.Email({
-            to: email,
-            from: "admin@isitsteaknight.com",
-            subject: subject,
-            html: html
-        })
-        sendmail.setFrom('IsItSteakNight')
-        sendbox.push(sendmail)
-    }
+    sendgrid.send(email, function(err, json) {
+        if (err) { return console.error(err) }
 
-    for(let sendmail of sendbox) {
-        sendgrid.send(sendmail, (err, json) => {
-            if (err) { return console.error(err) }
-
-            console.log(json)
-        })
-    }
+        console.log(json)
+    });
 }
 
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, response) => {
