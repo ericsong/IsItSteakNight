@@ -7,18 +7,61 @@ var client = new Client()
 client.connectSync('postgresql://iisn_admin:abc123@localhost:5432/isitsteaknight')
 
 var sendgrid = Sendgrid(process.env.SG_USER, process.env.SG_KEY)
-var email = new sendgrid.Email()
 
-var payload = {
-    to: "regonics@gmail.com",
-    from: "me@isitsteaknight.com",
-    subject: "Steak is being served at Busch Dining Hall",
-    text: "Teriyaki steak is being served at Busch Dining Hall for Dinner"
+function bold(str) {
+    return "<b>" + str + "</b>"
 }
-sendgrid.send(payload, (err, json) => {
-    if (err) { console.error(err) }
-    console.log(json)
-})
+
+function sendEmails(items, emails, query) {
+    let capitalizedQuery = query.toLowerCase().charAt(0).toUpperCase() + query.slice(1)
+    capitalizedQuery = capitalizedQuery.trim()
+    let halls = []
+
+    for(let item of items) {
+        let hall = item.dininghall
+        if(hall.includes('Livingston')) {
+            hall = 'Livingston'
+        } else if(hall.includes('Brower')) {
+            hall = 'Brower'
+        } else if(hall.includes('Busch')) {
+            hall = 'Busch'
+        } else if(hall.includes('Neilson')) {
+            hall = 'Neilson'
+        }
+
+        if(halls.indexOf(hall) === -1) {
+            halls.push(hall)
+        }
+    }
+    let hallString = halls.join(', ') + " Dining Hall"
+    let subject = capitalizedQuery + " is being served at " + hallString
+
+    let html = ""
+    for(let item of items) {
+        html += bold(item.item) + " is being served at " + bold(item.dininghall) + " for " + bold(item.meal)
+    }
+
+    let sendbox = []
+
+    for(let email of emails) {
+        let sendmail = new sendgrid.Email({
+            to: email,
+            from: "admin@isitsteaknight.com",
+            subject: subject,
+            html: html
+        })
+        sendmail.setFrom('IsItSteakNight')
+        sendbox.push(sendmail)
+    }
+
+    for(let sendmail of sendbox) {
+        sendgrid.send(sendmail, (err, json) => {
+            if (err) { return console.error(err) }
+
+            console.log(json)
+        })
+    }
+}
 
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, response) => {
     let menu = JSON.parse(body.body)
@@ -40,7 +83,8 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
         }
         i--
 
-        console.log(query + ": " + emails)
-        console.log(matchedItems)
+        if(query === "Wild Rice") {
+            sendEmails(matchedItems, emails, query)
+        }
     }
 });
