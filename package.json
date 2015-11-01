@@ -4,10 +4,11 @@
   "description": "RU Dining Hall food checker",
   "main": "run.js",
   "dependencies": {
-    "babel": "^5.8.21",
-    "request": "^2.60.0",
+    "async": "^1.4.2",
+    "babel": "^5.8.29",
     "mongoose": "^4.1.4",
-    "async": "^1.4.2"
+    "pg-native": "^1.9.0",
+    "request": "^2.60.0"
   },
   "devDependencies": {},
   "scripts": {

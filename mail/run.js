@@ -1,2 +1,2 @@
 require('babel/register');
-require('send.js');
+require('./send.js');

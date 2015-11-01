@@ -74,7 +74,8 @@ def addSubscriber():
         cur.execute(insert_query)
         conn.commit()
         return jsonify(message="success")
-    except:
+    except Exception:
+        print(arg)
         print("create subscription failed")
 
 @app.route('/MenuData')
