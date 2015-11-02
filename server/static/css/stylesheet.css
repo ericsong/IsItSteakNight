@@ -19,6 +19,13 @@ form input {
     width: 80%;
 }
 
+#submit-message {
+    text-align: left;
+    margin-top: 5px;
+    margin-left: 15px;
+    font-size: 12;
+}
+
 .item-desc-container {
     max-width: 500px;
 }

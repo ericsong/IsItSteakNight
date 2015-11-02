@@ -105,7 +105,7 @@ $(document).ready(function() {
                 query: currentQuery
             },
             success: function(data) {
-                console.log(data);
+                $('#submit-message').text(data.message);
             }
         });
 
