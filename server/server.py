@@ -1,10 +1,13 @@
 import string
 import threading
 import psycopg2
+import re
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from analyzer import isTonightSteakNight, getMenu
 
 app = Flask(__name__, static_url_path='')
+
+pattern = re.compile(".+@.+\..+")
 
 try:
     conn = psycopg2.connect("host='localhost' dbname='isitsteaknight' user='iisn_admin' password='abc123'")
@@ -15,6 +18,9 @@ cur = conn.cursor()
 status = {
     'isSteakNight': False
 }
+
+def validEmail(email):
+    return pattern.match(email)
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -51,6 +57,9 @@ def addSubscriber():
         'email': email,
         'query': query
     }
+
+    if not validEmail(email):
+        return jsonify(message="Invalid email")
 
     select_template = string.Template("""
         SELECT id from "Subscription" WHERE email='$email' AND query='$query'
