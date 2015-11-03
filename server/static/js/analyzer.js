@@ -106,6 +106,11 @@ $(document).ready(function() {
             },
             success: function(data) {
                 $('#submit-message').text(data.message);
+                if(data.status === "success") {
+                    $('#submit-message').removeClass().addClass('success');
+                } else if(data.status === "failure"){
+                    $('#submit-message').removeClass().addClass('failure');
+                }
             }
         });
 

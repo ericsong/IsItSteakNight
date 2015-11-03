@@ -59,7 +59,10 @@ def addSubscriber():
     }
 
     if not validEmail(email):
-        return jsonify(message="Invalid email")
+        return jsonify({
+            'message': "Invalid email",
+            'status': "failure" 
+        })
 
     select_template = string.Template("""
         SELECT id from "Subscription" WHERE email='$email' AND query='$query'
@@ -72,7 +75,10 @@ def addSubscriber():
     print(result)
     if result is not None:
         print('here')
-        return jsonify(message="You're already subscribed for this item!")
+        return jsonify({
+            'message': "You're already subscribed for this item!",
+            'status': "failure"
+        })
 
     insert_template = string.Template("""
         INSERT INTO "Subscription" (email, query) VALUES ('$email', '$query')
@@ -82,7 +88,10 @@ def addSubscriber():
     try:
         cur.execute(insert_query)
         conn.commit()
-        return jsonify(message="success")
+        return jsonify({
+            'message': "success",
+            'status': "success"
+        })
     except Exception:
         print(arg)
         print("create subscription failed")
