@@ -12,9 +12,13 @@ function bold(str) {
     return "<b>" + str + "</b>"
 }
 
+String.prototype.capitalize = function() {
+      return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+};
+
 function sendEmails(items, emails, query) {
-    let capitalizedQuery = query.toLowerCase().charAt(0).toUpperCase() + query.slice(1)
-    capitalizedQuery = capitalizedQuery.trim()
+    //let capitalizedQuery = query.charAt(0).toUpperCase() + query.toLowerCase().slice(1)
+    let capitalizedQuery = query.toLowerCase().capitalize().trim()
     let halls = []
 
     for(let item of items) {
@@ -39,6 +43,7 @@ function sendEmails(items, emails, query) {
     let html = ""
     for(let item of items) {
         html += bold(item.item) + " is being served at " + bold(item.dininghall) + " for " + bold(item.meal)
+        html += "<br>"
     }
 
     let email = new sendgrid.Email({
@@ -71,7 +76,7 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
             i++
 
             if(i == rows.length) {
-                break
+                break;
             }
         }
         i--

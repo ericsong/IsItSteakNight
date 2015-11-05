@@ -53,6 +53,8 @@ def root():
 def addSubscriber():
     email = request.form.get('email')
     query = request.form.get('query')
+    query = query.lower()
+
     values = {
         'email': email,
         'query': query
