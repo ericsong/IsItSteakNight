@@ -24,7 +24,7 @@
         <div class="items-container">
             {% for item in items %}
             <h3>
-                {{ item.dininghall }} is serving... {{ item.genre }}: {{ item.item }} for {{ item.meal }}
+              {{ item.dininghall }} is serving... {{ item.item }}({{ item.genre }}) for {{ item.meal }}
             </h3>
             {% endfor %}
         </div>

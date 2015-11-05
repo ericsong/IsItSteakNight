@@ -60,8 +60,8 @@ $(document).ready(function() {
         for(var i = 0; i < items.length; i++) {
             var item = items[i];
 
-            var outputText = item.dininghall + " is serving ... " + item.genre +
-                             ": " + item.item + " for " + item.meal;
+            var outputText = item.dininghall + " is serving ... " + item.item +
+                             " (" + item.genre + ") for " + item.meal;
             container.append($("<h3></h3").text(outputText));     
         }
 

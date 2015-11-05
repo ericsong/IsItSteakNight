@@ -30,12 +30,18 @@ function isMatchingItem(genre, item, query) {
     var item_lower = item.toLowerCase();
     var query_lower = query.toLowerCase();
 
-    if(
-        item_lower.indexOf(query_lower) !== -1 &&
-        validGenre(genre) &&
-        miscFlags(item)
-    ) {
-        return true;
+    if(query_lower === "steak") {
+        if(
+            item_lower.indexOf(query_lower) !== -1 &&
+            validGenre(genre) &&
+            miscFlags(item)
+        ) {
+            return true;
+        }
+    } else {
+        if(item_lower.indexOf(query_lower) !== -1) {
+            return true; 
+        } 
     }
 
     return false;
@@ -144,8 +150,8 @@ $(document).ready(function() {
         for(var i = 0; i < items.length; i++) {
             var item = items[i];
 
-            var outputText = item.dininghall + " is serving ... " + item.genre +
-                             ": " + item.item + " for " + item.meal;
+            var outputText = item.dininghall + " is serving ... " + item.item +
+                             " (" + item.genre + ") for " + item.meal;
             container.append($("<h3></h3").text(outputText));     
         }
 
