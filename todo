@@ -1,2 +1,4 @@
--valid email checker
 -remove extra flags for non steak items
+-lower case all queries on receival
+-proper case on display (email)
+

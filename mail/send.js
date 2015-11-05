@@ -1,7 +1,7 @@
 import Client from 'pg-native'
 import request from 'request'
 import Sendgrid from 'sendgrid'
-import getMatchingItems from './analyzer'
+import getMatchingItems from '../server/static/js/analyzer'
 
 var client = new Client()
 client.connectSync('postgresql://iisn_admin:abc123@localhost:5432/isitsteaknight')
@@ -76,7 +76,7 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
         }
         i--
 
-        if(query === "Wild Rice") {
+        if(query === "BROWN RICE") {
             sendEmails(matchedItems, emails, query)
         }
     }
