@@ -12,6 +12,10 @@ function bold(str) {
     return "<b>" + str + "</b>"
 }
 
+function color(str) {
+    return '<span style="color: #C21400;">' + str + "</span>"
+}
+
 String.prototype.capitalize = function() {
       return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
 };
@@ -42,7 +46,7 @@ function sendEmails(items, emails, query) {
 
     let html = ""
     for(let item of items) {
-        html += bold(item.item) + " is being served at " + bold(item.dininghall) + " for " + bold(item.meal)
+        html += color(bold(item.item)) + " is being served at " + bold(item.dininghall) + " for " + bold(item.meal)
         html += "<br>"
     }
 
