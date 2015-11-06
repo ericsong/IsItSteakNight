@@ -60,9 +60,9 @@ $(document).ready(function() {
         for(var i = 0; i < items.length; i++) {
             var item = items[i];
 
-            var outputText = item.dininghall + " is serving ... " + item.item +
-                             " (" + item.genre + ") for " + item.meal;
-            container.append($("<h3></h3").text(outputText));     
+            var outputText = item.dininghall + " is serving ... <span>" + item.item +
+                             "</span> (" + item.genre + ") for " + item.meal;
+            container.append($("<h3></h3").html(outputText));     
         }
 
         if(items.length == 0) {
@@ -73,7 +73,6 @@ $(document).ready(function() {
             }
         } else {
             $($('.isSteakNight')[0]).text("\xa0YES\xa0");
-            console.log('hi');
             var emojis = $('.emoji');
             for(var i = 0; i < emojis.length; i++) {
                 $(emojis[i]).attr('src', '/media/fire.png');
