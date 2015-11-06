@@ -66,9 +66,18 @@ $(document).ready(function() {
         }
 
         if(items.length == 0) {
-            $($('.isSteakNight')[0]).text("NO");
+            $($('.isSteakNight')[0]).text("\xa0NO\xa0");
+            var emojis = $('.emoji');
+            for(var i = 0; i < emojis.length; i++) {
+                $(emojis[i]).attr('src', '/media/crying-face.png');
+            }
         } else {
-            $($('.isSteakNight')[0]).text("YES");
+            $($('.isSteakNight')[0]).text("\xa0YES\xa0");
+            console.log('hi');
+            var emojis = $('.emoji');
+            for(var i = 0; i < emojis.length; i++) {
+                $(emojis[i]).attr('src', '/media/fire.png');
+            }
         }
     }
 });

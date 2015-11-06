@@ -19,6 +19,17 @@ form input {
     width: 80%;
 }
 
+.emoji {
+    margin-top: 27px;
+    height: 45px;
+    float: left;
+}
+
+.isSteakNight {
+    float: left;
+    font-size: 40px;
+}
+
 #submit-message {
     text-align: left;
     margin-top: 5px;
