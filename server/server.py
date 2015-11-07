@@ -2,6 +2,7 @@ import string
 import threading
 import psycopg2
 import re
+import uuid
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from analyzer import isTonightSteakNight, getMenu
 
@@ -66,15 +67,14 @@ def addSubscriber():
             'status': "failure" 
         })
 
+    #Execute query to check if subscription already exists
     select_template = string.Template("""
-        SELECT id from "Subscription" WHERE email='$email' AND query='$query'
+        SELECT id from "Subscription" WHERE subscriber='$email' AND query='$query'
     """)
     select_query = select_template.substitute(values)
-
     cur.execute(select_query)
     result = cur.fetchone()
 
-    print(result)
     if result is not None:
         print('here')
         return jsonify({
@@ -82,8 +82,31 @@ def addSubscriber():
             'status': "failure"
         })
 
+    #Execute query to check if subscriber already exists
+    select_template = string.Template("""
+        SELECT email from "Subscriber" WHERE email='$email'
+    """)
+    select_query = select_template.substitute(values)
+    cur.execute(select_query)
+    result = cur.fetchone()
+
+    if result is None:
+        values['key'] = uuid.uuid4()
+
+        insert_template = string.Template("""
+            INSERT INTO "Subscriber" (email, key) VALUES ('$email', '$key')
+        """)
+        insert_query = insert_template.substitute(values)
+
+        try:
+            cur.execute(insert_query)
+            conn.commit()
+        except Exception as e:
+            print(e)
+            print("create subscriber failed")
+
     insert_template = string.Template("""
-        INSERT INTO "Subscription" (email, query) VALUES ('$email', '$query')
+        INSERT INTO "Subscription" (subscriber, query) VALUES ('$email', '$query')
     """)
     insert_query = insert_template.substitute(values)
 
@@ -94,8 +117,8 @@ def addSubscriber():
             'message': "success",
             'status': "success"
         })
-    except Exception:
-        print(arg)
+    except Exception as e:
+        print(e)
         print("create subscription failed")
 
 @app.route('/MenuData')
