@@ -65,18 +65,70 @@ function sendEmails(items, emails, query) {
     });
 }
 
+function sendMultiQueryEmail(email, items, queries) {
+    let capitalizedQueries = []
+
+    let buckets = []
+    for(let query of queries) {
+        let bucket = {
+            query: query,
+            items: []
+        }
+
+        for(let item of items) {
+            if(query.toLowerCase() === item.query.toLowerCase()) {
+                bucket.items.push(item)
+            }
+        }
+
+        if(bucket.items.length > 0) {
+            buckets.push(bucket)
+            capitalizedQueries.push(query.toLowerCase().capitalize().trim())
+        }
+    }
+    let subject = capitalizedQueries.join(', ') + " is being served at Rutgers Dining Halls"
+
+    let html = ""
+    for(let bucket of buckets) {
+        html += "<h2>"
+        html += bucket.query.toLowerCase().capitalize().trim()
+        html += "</h2>"
+
+        for(let item of bucket.items) {
+            html += color(bold(item.item)) + " is being served at " + bold(item.dininghall) + " for " + bold(item.meal)
+            html += "<br>"  
+        }
+        
+        html += "<br>"       
+        html += "<br>"
+    }
+
+    let sg_email = new sendgrid.Email({
+        from: "admin@isitsteaknight.com",
+        subject: subject,
+        html: html
+    })
+    sg_email.setTos(email)
+    sg_email.setFrom('IsItSteakNight')
+
+    sendgrid.send(sg_email, function(err, json) {
+        if (err) { return console.error(err) }
+
+        console.log(json)
+    });
+}
+
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, response) => {
     let menu = JSON.parse(body.body)
-    let rows = client.querySync('SELECT query, email FROM "Subscription" ORDER BY query');
-    
-    console.log(rows)
-    for(let i = 0; i < rows.length; i++) {
-        let query = rows[i].query;
-        let emails = [];
+    let rows = client.querySync('SELECT query, subscriber FROM "Subscription" ORDER BY subscriber');
 
-        let matchedItems = getMatchingItems(menu, query)
-        while(rows[i].query.toLowerCase() == query.toLowerCase()) {
-            emails.push(rows[i].email)
+    for(let i = 0; i < rows.length; i++) {
+        let email = rows[i].subscriber;
+        let queries = []
+
+        //keep iterating to get all of current user's queries
+        while(rows[i].subscriber.toLowerCase() == email.toLowerCase()) {
+            queries.push(rows[i].query)
             i++
 
             if(i == rows.length) {
@@ -85,8 +137,22 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
         }
         i--
 
-        if(query === "BROWN RICE") {
-            sendEmails(matchedItems, emails, query)
+        let matches = []
+        let matchCount = 0
+        let onlyQuery
+        for(let query of queries) {
+            matches = matches.concat(getMatchingItems(menu, query))
+
+            if(matches.length > 0) {
+                matchCount++
+                onlyQuery = query
+            }
+        }
+
+        if(matchCount == 1) {
+            sendEmails(matches, [email], onlyQuery)
+        } else if(matchCount > 1) {
+            sendMultiQueryEmail(email, matches, queries)
         }
     }
 });
