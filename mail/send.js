@@ -8,6 +8,8 @@ client.connectSync('postgresql://iisn_admin:abc123@localhost:5432/isitsteaknight
 
 var sendgrid = Sendgrid(process.env.SG_USER, process.env.SG_KEY)
 
+var cache = {}
+
 function bold(str) {
     return "<b>" + str + "</b>"
 }
@@ -19,6 +21,19 @@ function color(str) {
 String.prototype.capitalize = function() {
       return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
 };
+
+function cacheMatch(menu, query) {
+    query = query.toLowerCase()
+
+    if(cache.query) {
+        return cache.query
+    } else {
+        let matches = getMatchingItems(menu, query)
+        cache[query] = matches
+
+        return matches
+    }
+}
 
 function sendEmails(items, emails, query) {
     //let capitalizedQuery = query.charAt(0).toUpperCase() + query.toLowerCase().slice(1)
@@ -59,7 +74,11 @@ function sendEmails(items, emails, query) {
     email.setFrom('IsItSteakNight')
 
     sendgrid.send(email, function(err, json) {
-        if (err) { return console.error(err) }
+        if (err) {
+            console.error(email)
+            console.error(subject)
+            return console.error(err)
+        }
 
         console.log(json)
     });
@@ -112,7 +131,11 @@ function sendMultiQueryEmail(email, items, queries) {
     sg_email.setFrom('IsItSteakNight')
 
     sendgrid.send(sg_email, function(err, json) {
-        if (err) { return console.error(err) }
+        if (err) {
+            console.error(email)
+            console.error(subject)
+            return console.error(err)
+        }
 
         console.log(json)
     });
@@ -141,17 +164,35 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
         let matchCount = 0
         let onlyQuery
         for(let query of queries) {
-            matches = matches.concat(getMatchingItems(menu, query))
+            let newMatches = cacheMatch(menu, query)
+            matches = matches.concat(newMatches)
 
-            if(matches.length > 0) {
+            if(newMatches.length > 0) {
                 matchCount++
                 onlyQuery = query
             }
         }
 
         if(matchCount == 1) {
+            /*
+            console.log('single mail')
+            console.log(email)
+            console.log(matches.length)
+            console.log([onlyQuery])
+            console.log('***************')
+            */
+
             sendEmails(matches, [email], onlyQuery)
         } else if(matchCount > 1) {
+            //sendMultiQueryEmail(email, matches, queries)
+            /*
+            console.log('multi mail')
+            console.log(email)
+            console.log(matches.length)
+            console.log(queries)
+            console.log('***************')
+            */
+
             sendMultiQueryEmail(email, matches, queries)
         }
     }
