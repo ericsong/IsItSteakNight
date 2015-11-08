@@ -50,6 +50,34 @@ def root():
 
     return render_template('home.html', isSteakNight=display_str, items=status['items'])
 
+@app.route('/ConfirmSubscriber/')
+def confirmSubscriber():
+    token = request.args.get('token')
+
+    values = {
+        'token': token
+    }
+
+    #Execute query to check if subscription already exists
+    select_template = string.Template("""
+        SELECT email from "Subscriber" WHERE key='$token'
+    """)
+    select_query = select_template.substitute(values)
+    cur.execute(select_query)
+    result = cur.fetchone()
+
+    if result is not None:
+        update_template = string.Template("""
+            UPDATE "Subscriber" SET verified=True WHERE key='$token'
+        """)
+        update_query = update_template.substitute(values)
+        cur.execute(update_query)
+        conn.commit()
+
+        return render_template('confirmed.html')
+    else:
+        return render_template('unconfirmed.html')
+
 @app.route('/subscribe', methods=['POST'])
 def addSubscriber():
     email = request.form.get('email')
@@ -76,7 +104,6 @@ def addSubscriber():
     result = cur.fetchone()
 
     if result is not None:
-        print('here')
         return jsonify({
             'message': "You're already subscribed for this item!",
             'status': "failure"
