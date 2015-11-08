@@ -5,6 +5,7 @@ import re
 import uuid
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from analyzer import isTonightSteakNight, getMenu
+from send import sendConfirmationEmail
 
 app = Flask(__name__, static_url_path='')
 
@@ -102,6 +103,7 @@ def addSubscriber():
     select_query = select_template.substitute(values)
     cur.execute(select_query)
     result = cur.fetchone()
+    print(result)
 
     if result is not None:
         return jsonify({
@@ -120,6 +122,7 @@ def addSubscriber():
     if result is None:
         values['key'] = uuid.uuid4()
 
+        #Create new user
         insert_template = string.Template("""
             INSERT INTO "Subscriber" (email, key) VALUES ('$email', '$key')
         """)
@@ -128,6 +131,8 @@ def addSubscriber():
         try:
             cur.execute(insert_query)
             conn.commit()
+
+            sendConfirmationEmail(values)
         except Exception as e:
             print(e)
             print("create subscriber failed")
