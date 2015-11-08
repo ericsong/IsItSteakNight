@@ -18,6 +18,12 @@ function color(str) {
     return '<span style="color: #C21400;">' + str + "</span>"
 }
 
+function createUnsubLink(token) {
+    let server = 'http://localhost:5000'
+
+    return '<a href="' + server + '/unsubscribe?token=' + token + '">here</a>'
+}
+
 String.prototype.capitalize = function() {
       return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
 };
@@ -35,7 +41,7 @@ function cacheMatch(menu, query) {
     }
 }
 
-function sendEmails(email, items, query) {
+function sendEmails(email, token, items, query) {
     //let capitalizedQuery = query.charAt(0).toUpperCase() + query.toLowerCase().slice(1)
     let capitalizedQuery = query.toLowerCase().capitalize().trim()
     let halls = []
@@ -64,6 +70,8 @@ function sendEmails(email, items, query) {
         html += color(bold(item.item)) + " is being served at " + bold(item.dininghall) + " for " + bold(item.meal)
         html += "<br>"
     }
+    html += "<br>"
+    html += 'Click ' + createUnsubLink(token) + ' to unsubscribe.'
 
     let sg_email = new sendgrid.Email({
         from: "admin@isitsteaknight.com",
@@ -84,7 +92,7 @@ function sendEmails(email, items, query) {
     });
 }
 
-function sendMultiQueryEmail(email, items, queries) {
+function sendMultiQueryEmail(email, token, items, queries) {
     let capitalizedQueries = []
 
     let buckets = []
@@ -121,6 +129,7 @@ function sendMultiQueryEmail(email, items, queries) {
         html += "<br>"       
         html += "<br>"
     }
+    html += 'Click ' + createUnsubLink(token) + ' to unsubscribe.'
 
     let sg_email = new sendgrid.Email({
         from: "admin@isitsteaknight.com",
@@ -147,6 +156,7 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
 
     for(let i = 0; i < rows.length; i++) {
         let email = rows[i].subscriber;
+        let token = rows[i].key;
         let queries = []
 
         //keep iterating to get all of current user's queries
@@ -174,26 +184,23 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
         }
 
         if(matchCount == 1) {
-            /*
             console.log('single mail')
             console.log(email)
+            console.log(token)
             console.log(matches.length)
             console.log([onlyQuery])
             console.log('***************')
-            */
 
-            sendEmails(email, matches, onlyQuery)
+            sendEmails(email, token, matches, onlyQuery)
         } else if(matchCount > 1) {
-            //sendMultiQueryEmail(email, matches, queries)
-            /*
             console.log('multi mail')
             console.log(email)
+            console.log(token)
             console.log(matches.length)
             console.log(queries)
             console.log('***************')
-            */
 
-            sendMultiQueryEmail(email, matches, queries)
+            sendMultiQueryEmail(email, token, matches, queries)
         }
     }
 });
