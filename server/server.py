@@ -79,6 +79,35 @@ def confirmSubscriber():
     else:
         return render_template('unconfirmed.html')
 
+@app.route('/unsubscribe/')
+def unsubscribe():
+    token = request.args.get('token')
+
+    values = {
+        'token': token
+    }
+
+    #Execute query to check if subscription already exists
+    select_template = string.Template("""
+        SELECT email from "Subscriber" WHERE key='$token'
+    """)
+    select_query = select_template.substitute(values)
+    cur.execute(select_query)
+    result = cur.fetchone()
+
+    if result is not None:
+        update_template = string.Template("""
+            UPDATE "Subscriber" SET active=False WHERE key='$token'
+        """)
+        update_query = update_template.substitute(values)
+        cur.execute(update_query)
+        conn.commit()
+
+        return render_template('unsubscribe.html')
+    else:
+        return render_template('unsubfailed.html')
+
+
 @app.route('/subscribe', methods=['POST'])
 def addSubscriber():
     email = request.form.get('email')
