@@ -35,7 +35,7 @@ function cacheMatch(menu, query) {
     }
 }
 
-function sendEmails(items, emails, query) {
+function sendEmails(email, items, query) {
     //let capitalizedQuery = query.charAt(0).toUpperCase() + query.toLowerCase().slice(1)
     let capitalizedQuery = query.toLowerCase().capitalize().trim()
     let halls = []
@@ -65,15 +65,15 @@ function sendEmails(items, emails, query) {
         html += "<br>"
     }
 
-    let email = new sendgrid.Email({
+    let sg_email = new sendgrid.Email({
         from: "admin@isitsteaknight.com",
         subject: subject,
         html: html
     })
-    email.setTos(emails)
-    email.setFrom('IsItSteakNight')
+    sg_email.setTos(email)
+    sg_email.setFrom('IsItSteakNight')
 
-    sendgrid.send(email, function(err, json) {
+    sendgrid.send(sg_email, function(err, json) {
         if (err) {
             console.error(email)
             console.error(subject)
@@ -143,7 +143,7 @@ function sendMultiQueryEmail(email, items, queries) {
 
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, response) => {
     let menu = JSON.parse(body.body)
-    let rows = client.querySync('SELECT query, subscriber FROM "Subscription" ORDER BY subscriber');
+    let rows = client.querySync('SELECT query, subscriber, key FROM "Subscription" INNER JOIN "Subscriber" ON "Subscription".subscriber = "Subscriber".email ORDER BY subscriber');
 
     for(let i = 0; i < rows.length; i++) {
         let email = rows[i].subscriber;
@@ -182,7 +182,7 @@ request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, respo
             console.log('***************')
             */
 
-            sendEmails(matches, [email], onlyQuery)
+            sendEmails(email, matches, onlyQuery)
         } else if(matchCount > 1) {
             //sendMultiQueryEmail(email, matches, queries)
             /*
