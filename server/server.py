@@ -59,6 +59,7 @@ def confirmSubscriber():
     cur = conn.cursor()
     token = request.args.get('token')
 
+
     values = {
         'token': token
     }
