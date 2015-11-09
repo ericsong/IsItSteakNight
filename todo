@@ -1,1 +1,3 @@
 ??? -add a date indicator to web page + emails
+remove success/fail message after a few seconds on web page
+reflash a message if repeated
