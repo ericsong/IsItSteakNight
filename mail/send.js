@@ -152,7 +152,7 @@ function sendMultiQueryEmail(email, token, items, queries) {
 
 request('https://rumobile.rutgers.edu/1/rutgers-dining.txt', (error, body, response) => {
     let menu = JSON.parse(body.body)
-    let rows = client.querySync('SELECT query, subscriber, key FROM "Subscription" INNER JOIN "Subscriber" ON "Subscription".subscriber = "Subscriber".email ORDER BY subscriber');
+    let rows = client.querySync('SELECT query, subscriber, key FROM "Subscription" INNER JOIN "Subscriber" ON "Subscription".subscriber = "Subscriber".email WHERE "Subscriber".active=True AND "Subscriber".verified=True ORDER BY subscriber');
 
     for(let i = 0; i < rows.length; i++) {
         let email = rows[i].subscriber;
