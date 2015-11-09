@@ -56,6 +56,7 @@ def root():
 
 @app.route('/ConfirmSubscriber/')
 def confirmSubscriber():
+    cur = conn.cursor()
     token = request.args.get('token')
 
     values = {
@@ -77,13 +78,15 @@ def confirmSubscriber():
         update_query = update_template.substitute(values)
         cur.execute(update_query)
         conn.commit()
-
+        cur.close()
         return render_template('confirmed.html')
     else:
+        cur.close()
         return render_template('unconfirmed.html')
 
 @app.route('/unsubscribe/')
 def unsubscribe():
+    cur = conn.cursor()
     token = request.args.get('token')
 
     values = {
@@ -106,13 +109,16 @@ def unsubscribe():
         cur.execute(update_query)
         conn.commit()
 
+        cur.close()
         return render_template('unsubscribe.html')
     else:
+        cur.close()
         return render_template('unsubfailed.html')
 
 
 @app.route('/subscribe', methods=['POST'])
 def addSubscriber():
+    cur = conn.cursor()
     email = request.form.get('email')
     query = request.form.get('query')
     query = query.lower()
@@ -138,6 +144,7 @@ def addSubscriber():
     print(result)
 
     if result is not None:
+        cur.close()
         return jsonify({
             'message': "You're already subscribed for this item!",
             'status': "failure"
@@ -177,6 +184,7 @@ def addSubscriber():
     try:
         cur.execute(insert_query)
         conn.commit()
+        cur.close()
         return jsonify({
             'message': "success",
             'status': "success"
