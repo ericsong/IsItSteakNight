@@ -18,7 +18,6 @@ try:
     conn = psycopg2.connect("host='localhost' dbname='isitsteaknight' user='iisn_admin' password='" + DB_PASS + "'")
 except:
     print("I am unable to connect to the database")
-cur = conn.cursor()
 
 status = {
     'isSteakNight': False
