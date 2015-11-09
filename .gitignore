@@ -3,4 +3,5 @@ node_modules
 dump
 api.key
 keys
+nginx.log
 __pycache__

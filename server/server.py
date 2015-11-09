@@ -11,6 +11,7 @@ from send import sendConfirmationEmail
 DB_PASS = os.environ['IISN_DB_PASS']
 
 app = Flask(__name__, static_url_path='')
+app.debug = True
 
 pattern = re.compile(".+@.+\..+")
 
@@ -50,7 +51,7 @@ def root():
         display_str = "YES"
     else:
         display_str = "NO"
-
+    
     return render_template('home.html', isSteakNight=display_str, items=status['items'])
 
 @app.route('/ConfirmSubscriber/')
@@ -196,7 +197,5 @@ def addSubscriber():
 def sendMenuData():
     return jsonify(menu=getMenu())
 
-if __name__ == '__main__':
-    updateSteakCheck()
-    set_interval(updateSteakCheck, 60)
-    app.run(debug=True, host='0.0.0.0')
+updateSteakCheck()
+set_interval(updateSteakCheck, 60)
