@@ -1,6 +1,9 @@
 import string
 import psycopg2
+import os
 from pymongo import MongoClient
+
+DB_PASS = os.environ['IISN_DB_PASS']
 
 client = MongoClient('127.0.0.1', 27017)
 db = client.isitsteaknight
@@ -8,7 +11,7 @@ db = client.isitsteaknight
 menus = db.menus
 
 try:
-    conn = psycopg2.connect("host='localhost' dbname='isitsteaknight' user='iisn_admin' password='abc123'")
+    conn = psycopg2.connect("host='localhost' dbname='isitsteaknight' user='iisn_admin' password='" + DB_PASS + "'")
 except:
     print("I am unable to connect to the database")
 

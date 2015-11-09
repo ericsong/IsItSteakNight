@@ -13,7 +13,7 @@ def sendConfirmationEmail(user):
     message = sendgrid.Mail()
     message.add_to(user['email'])
     message.set_subject('IsItSteakNight Email Confirmation')
-    message.set_html('Hi! <br> Please click the following link to confirm your email, ' + PRODUCTION_URL + 'ConfirmSubscriber?token=' + str(user['key']))
+    message.set_html('Hi! <br><br> Please click the following link to confirm your email, ' + PRODUCTION_URL + 'ConfirmSubscriber?token=' + str(user['key']))
     message.set_from('IsItSteakNight')
     status, msg = sg.send(message)
     print('email sent: ', status, msg)

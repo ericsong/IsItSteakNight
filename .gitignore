@@ -2,4 +2,5 @@ venv
 node_modules
 dump
 api.key
+keys
 __pycache__

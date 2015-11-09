@@ -3,8 +3,10 @@ import request from 'request'
 import Sendgrid from 'sendgrid'
 import getMatchingItems from '../server/static/js/analyzer'
 
+var DB_PASS = process.env.IISN_DB_PASS
+
 var client = new Client()
-client.connectSync('postgresql://iisn_admin:abc123@localhost:5432/isitsteaknight')
+client.connectSync('postgresql://iisn_admin:' + DB_PASS + '@localhost:5432/isitsteaknight')
 
 var sendgrid = Sendgrid(process.env.SG_USER, process.env.SG_PASS)
 

@@ -1,4 +1,3 @@
-CREATE ROLE iisn_admin WITH PASSWORD 'abc123';
 ALTER ROLE iisn_admin WITH LOGIN;
 
 CREATE TABLE "DiningHall" ("id" SERIAL PRIMARY KEY, "name" TEXT);

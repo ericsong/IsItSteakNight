@@ -3,16 +3,19 @@ import threading
 import psycopg2
 import re
 import uuid
+import os
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from analyzer import isTonightSteakNight, getMenu
 from send import sendConfirmationEmail
+
+DB_PASS = os.environ['IISN_DB_PASS']
 
 app = Flask(__name__, static_url_path='')
 
 pattern = re.compile(".+@.+\..+")
 
 try:
-    conn = psycopg2.connect("host='localhost' dbname='isitsteaknight' user='iisn_admin' password='abc123'")
+    conn = psycopg2.connect("host='localhost' dbname='isitsteaknight' user='iisn_admin' password='" + DB_PASS + "'")
 except:
     print("I am unable to connect to the database")
 cur = conn.cursor()
