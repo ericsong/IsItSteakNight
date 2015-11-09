@@ -6,7 +6,7 @@ import getMatchingItems from '../server/static/js/analyzer'
 var client = new Client()
 client.connectSync('postgresql://iisn_admin:abc123@localhost:5432/isitsteaknight')
 
-var sendgrid = Sendgrid(process.env.SG_USER, process.env.SG_KEY)
+var sendgrid = Sendgrid(process.env.SG_USER, process.env.SG_PASS)
 
 var cache = {}
 
@@ -19,7 +19,7 @@ function color(str) {
 }
 
 function createUnsubLink(token) {
-    let server = 'http://localhost:5000'
+    let server = 'http://isitsteaknight.com'
 
     return '<a href="' + server + '/unsubscribe?token=' + token + '">here</a>'
 }
