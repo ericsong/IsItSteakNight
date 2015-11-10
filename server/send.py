@@ -1,5 +1,8 @@
+from raven import Client
 import sendgrid
 import os
+
+client = Client(os.environ['SENTRY_DSN'])
 
 sg_user = os.environ['SG_USER']
 sg_pass = os.environ['SG_PASS']
@@ -17,4 +20,15 @@ def sendConfirmationEmail(user):
     message.set_from('IsItSteakNight')
     status, msg = sg.send(message)
     print('email sent: ', status, msg)
+
+    if(status is not 200):
+        client.context.merge({
+            'user': user,
+            'status': status,
+            'msg': msg
+        })
+        client.captureMessage('Send confirmation email failed.')
+        client.captureException()
+        client.context.clear()
+
     return (status, msg)
