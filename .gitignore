@@ -4,4 +4,6 @@ dump
 api.key
 keys
 nginx.log
+send_mail.sh
+set_keys.sh
 __pycache__
