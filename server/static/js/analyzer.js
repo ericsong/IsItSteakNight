@@ -17,7 +17,7 @@ function miscFlags(item) {
     if(
         item_lower.indexOf("philly") !== -1 ||
         item_lower.indexOf("tuna") !== -1 ||
-        item_lower.indexOf("sandwhich") !== -1
+        item_lower.indexOf("sandwich") !== -1
     ) {
         return false;
     }

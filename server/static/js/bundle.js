@@ -18,7 +18,7 @@ function miscFlags(item) {
     if(
         item_lower.indexOf("philly") !== -1 ||
         item_lower.indexOf("tuna") !== -1 ||
-        item_lower.indexOf("sandwhich") !== -1
+        item_lower.indexOf("sandwich") !== -1
     ) {
         return false;
     }
@@ -74,7 +74,8 @@ function getMatchingItems(menu, query) {
                             dininghall: dininghall.location_name,
                             meal: meal.meal_name,
                             genre: genre.genre_name,
-                            item: item  
+                            item: item,
+                            query: query
                         })
                     } 
                 }
