@@ -1,8 +1,31 @@
 var getMatchingItems = require('./analyzer');
 
+var IISN_APP = {}
+
+function shake(div) {
+    var interval = 100;
+    var distance = 5;
+    var times = 2;
+
+    $(div).css('position', 'relative');
+
+    for(var i = 0; i < times+1; i++) {
+        $(div).animate({ left: ((i%2==0 ? distance : distance*-1))}, interval);
+    }
+
+    $(div).animate({ left: 0}, interval);
+}      
+
 $(document).ready(function() {
     var menu = null;
     var currentQuery = "steak";
+
+    setInterval(function() {
+        var currentTime = new Date().getTime();
+        if(currentTime > IISN_APP.removeTime) {
+            $('#submit-message').text('');
+        }
+    }, 500)
 
     $("#item-desc").keypress(
         function(e){
@@ -27,12 +50,21 @@ $(document).ready(function() {
                 query: currentQuery
             },
             success: function(data) {
-                $('#submit-message').text(data.message);
-                if(data.status === "success") {
-                    $('#submit-message').removeClass().addClass('success');
-                } else if(data.status === "failure"){
-                    $('#submit-message').removeClass().addClass('failure');
+                var messageDiv = $('#submit-message');
+                var currentMessage = messageDiv.text();
+
+                messageDiv.text(data.message);
+                if(currentMessage === data.message) {
+                    shake(messageDiv);
                 }
+
+                if(data.status === "success") {
+                    messageDiv.removeClass().addClass('success');
+                } else if(data.status === "failure"){
+                    messageDiv.removeClass().addClass('failure');
+                }
+
+                IISN_APP.removeTime = new Date().getTime() + 5000; // convert to constant
             }
         });
 
