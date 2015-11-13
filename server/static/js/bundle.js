@@ -105,7 +105,7 @@ function shake(div) {
     }
 
     $(div).animate({ left: 0}, interval);
-}                         
+}      
 
 $(document).ready(function() {
     var menu = null;
@@ -118,6 +118,12 @@ $(document).ready(function() {
         }
     }, 500)
 
+    document.getElementById('item-desc').addEventListener("input", function(e) {
+        currentQuery = $('#item-desc').text()
+        $('#email-query').text(currentQuery.toUpperCase());
+        setNewItems(currentQuery);       
+    });
+/*
     $("#item-desc").keypress(
         function(e){
             if(e.which == 13) {
@@ -131,7 +137,7 @@ $(document).ready(function() {
             }
         }
     );
-
+*/
     $('form').submit(function(e) {
         $.ajax({
             url: '/subscribe',

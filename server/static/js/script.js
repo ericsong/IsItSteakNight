@@ -27,19 +27,11 @@ $(document).ready(function() {
         }
     }, 500)
 
-    $("#item-desc").keypress(
-        function(e){
-            if(e.which == 13) {
-                currentQuery = $('#item-desc').text();
-                $('#email-query').text(currentQuery.toUpperCase());
-                setNewItems(currentQuery);
-
-                return false;
-            } else {
-                return true;
-            }
-        }
-    );
+    document.getElementById('item-desc').addEventListener("input", function(e) {
+        currentQuery = $('#item-desc').text()
+        $('#email-query').text(currentQuery.toUpperCase());
+        setNewItems(currentQuery);       
+    });
 
     $('form').submit(function(e) {
         $.ajax({
