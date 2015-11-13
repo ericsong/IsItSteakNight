@@ -41,10 +41,14 @@
 
         <div style="text-align: center">
             <form action="/subscribe" method="POST">
-              <p>Enter your email if you want to get notified when it's <span id="email-query">STEAK</span> night:</p>
-                <input id="email-input" type="text" name="email">
-                <button type="submit"> Sign up! </button>
-                <p class="failure" id="submit-message"></p>
+                <div style="float: left;">
+                    <p>Enter your email if you want to get notified when it's <span id="email-query">STEAK</span> night:</p>
+                    <div class='input-box'>
+                        <input id="email-input" type="text" name="email">
+                        <button type="submit"> Sign up! </button>
+                    </div>
+                    <p class="failure" id="submit-message"></p>
+                </div>
             </form>
         </div>
     </body>

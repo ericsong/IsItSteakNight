@@ -1,10 +1,7 @@
 ??? -add a date indicator to web page + emails
-remove success/fail message after a few seconds on web page
-reflash a message if repeated
 look into bug where server/client pages are not synced
 sync textbox and query, user should not have to press enter
 figure out when menus change for the next day
-weird css when input text is really big
 
 for test...
 create 10 sample users, 3 items each, 1 user with 20 queries
