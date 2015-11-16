@@ -1,8 +1,10 @@
 ??? -add a date indicator to web page + emails
 look into bug where server/client pages are not synced
-figure out when menus change for the next day
 add sentry catchers
 
 for test...
 create 10 sample users, 3 items each, 1 user with 20 queries
 test over course of week and monitor for bugs
+
+notes...
+Menus generally update sometime between 1:00AM and 2:00AM
