@@ -24,7 +24,7 @@
             <div style="margin: 0 auto; display: inline-block;">
                 <img class="emoji" src="/media/fire.png">
                 <img class="emoji" src="/media/fire.png">
-                <h1 class="isSteakNight"> &nbsp {{ isSteakNight }} &nbsp </h1>
+                <h1 class="isSteakNight"> &nbsp  &nbsp </h1>
                 <img class="emoji" src="/media/fire.png">
                 <img class="emoji" src="/media/fire.png">
                 <div style="clear: both;"></div>
@@ -32,11 +32,6 @@
         </div>
 
         <div class="items-container">
-            {% for item in items %}
-            <h3>
-              {{ item.dininghall }} is serving... <span> {{ item.item }} </span>({{ item.genre }}) for {{ item.meal }}
-            </h3>
-            {% endfor %}
         </div>
 
         <div style="text-align: center">
