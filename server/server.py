@@ -4,11 +4,14 @@ import psycopg2
 import re
 import uuid
 import os
+from raven import Client as RavenClient
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from analyzer import isTonightSteakNight, getMenu
 from send import sendConfirmationEmail
 
 DB_PASS = os.environ['IISN_DB_PASS']
+
+raven_client = RavenClient(os.environ['SENTRY_DSN'])
 
 app = Flask(__name__, static_url_path='')
 app.debug = True
@@ -23,6 +26,29 @@ except:
 status = {
     'isSteakNight': False
 }
+
+def tryCatchSelectOneQuery(cur, query):
+    try:
+        cur.execute(query)
+        doc = cur.fetchone()
+        return doc
+    except:
+        raven_client.user_context({
+            'query': query
+        })
+        raven_client.captureMessage('PostgreSQL SELECT query failed')
+        return "error"
+
+def tryCatchInsertQuery(cur, query):
+    try:
+        cur.execute(query)
+        conn.commit()
+    except:
+        raven_client.user_context({
+            'query': query
+        })
+        raven_client.captureMessage('PostgreSQL INSERT query failed')
+        return "error"
 
 def validEmail(email):
     return pattern.match(email)
@@ -59,7 +85,6 @@ def confirmSubscriber():
     cur = conn.cursor()
     token = request.args.get('token')
 
-
     values = {
         'token': token
     }
@@ -69,16 +94,15 @@ def confirmSubscriber():
         SELECT email from "Subscriber" WHERE key='$token'
     """)
     select_query = select_template.substitute(values)
-    cur.execute(select_query)
-    result = cur.fetchone()
+    result = tryCatchSelectOneQuery(cur, select_query)
 
-    if result is not None:
+    if result is not None and result != "error":
         update_template = string.Template("""
             UPDATE "Subscriber" SET verified=True WHERE key='$token'
         """)
         update_query = update_template.substitute(values)
-        cur.execute(update_query)
-        conn.commit()
+        tryCatchInsertQuery(cur, update_query)
+
         cur.close()
         return render_template('confirmed.html')
     else:
@@ -99,16 +123,14 @@ def unsubscribe():
         SELECT email from "Subscriber" WHERE key='$token'
     """)
     select_query = select_template.substitute(values)
-    cur.execute(select_query)
-    result = cur.fetchone()
+    result = tryCatchSelectOneQuery(cur, select_query)
 
-    if result is not None:
+    if result is not None and result != "error":
         update_template = string.Template("""
             UPDATE "Subscriber" SET active=False WHERE key='$token'
         """)
         update_query = update_template.substitute(values)
-        cur.execute(update_query)
-        conn.commit()
+        tryCatchInsertQuery(cur, update_query)
 
         cur.close()
         return render_template('unsubscribe.html')
@@ -140,9 +162,13 @@ def addSubscriber():
         SELECT id from "Subscription" WHERE subscriber='$email' AND query='$query'
     """)
     select_query = select_template.substitute(values)
-    cur.execute(select_query)
-    result = cur.fetchone()
-    print(result)
+    result = tryCatchSelectOneQuery(cur, select_query)
+
+    if result == "error":
+        return jsonify({
+            'message': "An error has occurred. Please try again later.",
+            'status': "failure"
+        })
 
     if result is not None:
         cur.close()
@@ -156,8 +182,13 @@ def addSubscriber():
         SELECT email from "Subscriber" WHERE email='$email'
     """)
     select_query = select_template.substitute(values)
-    cur.execute(select_query)
-    result = cur.fetchone()
+    result = tryCatchSelectOneQuery(cur, select_query)
+
+    if result == "error":
+        return jsonify({
+            'message': "An error has occurred. Please try again later.",
+            'status': "failure"
+        })
 
     if result is None:
         values['key'] = uuid.uuid4()
@@ -167,32 +198,31 @@ def addSubscriber():
             INSERT INTO "Subscriber" (email, key) VALUES ('$email', '$key')
         """)
         insert_query = insert_template.substitute(values)
+        tryCatchInsertQuery(cur, insert_query)
+        if result == "error":
+            return jsonify({
+                'message': "An error has occurred. Please try again later.",
+                'status': "failure"
+            })
 
-        try:
-            cur.execute(insert_query)
-            conn.commit()
-
-            sendConfirmationEmail(values)
-        except Exception as e:
-            print(e)
-            print("create subscriber failed")
+        sendConfirmationEmail(values)
 
     insert_template = string.Template("""
         INSERT INTO "Subscription" (subscriber, query) VALUES ('$email', '$query')
     """)
     insert_query = insert_template.substitute(values)
-
-    try:
-        cur.execute(insert_query)
-        conn.commit()
-        cur.close()
+    tryCatchInsertQuery(cur, insert_query)
+    if result == "error":
         return jsonify({
-            'message': "success",
-            'status': "success"
+            'message': "An error has occurred. Please try again later.",
+            'status': "failure"
         })
-    except Exception as e:
-        print(e)
-        print("create subscription failed")
+
+    cur.close()
+    return jsonify({
+        'message': "success",
+        'status': "success"
+    })
 
 @app.route('/MenuData')
 def sendMenuData():
