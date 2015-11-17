@@ -6,6 +6,9 @@ import sys
 import psycopg2
 import pymongo
 from pymongo import MongoClient
+from raven import RavenClient
+
+raven_client = RavenClient(os.environ['SENTRY_DSN'])
 
 client = MongoClient('127.0.0.1', 27017)
 db = client.isitsteaknight
@@ -14,12 +17,17 @@ menus = db.menus
 
 def getMenu(queryDatabase = False):
     if queryDatabase:
-        latestMenu = menus.find().sort([("time", pymongo.DESCENDING)])[0]['data']
+        try:
+            latestMenu = menus.find().sort([("time", pymongo.DESCENDING)])[0]['data']
+        except:
+            raven_client.captureMessage('Unable to get latest menu from mongodb')
     else:
-        r = requests.get('https://rumobile.rutgers.edu/1/rutgers-dining.txt')
-        latestMenu = json.loads(r.text)
+        try:
+            r = requests.get('https://rumobile.rutgers.edu/1/rutgers-dining.txt')
+            latestMenu = json.loads(r.text)
+        except:
+            raven_client.captureMessage('Unable to fetch menu from rumobile')
 
-    print(latestMenu)
     return latestMenu
 
 def validGenre(genre):
