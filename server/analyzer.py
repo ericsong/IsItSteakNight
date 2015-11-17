@@ -5,8 +5,9 @@ import requests
 import sys
 import psycopg2
 import pymongo
+import os
 from pymongo import MongoClient
-from raven import RavenClient
+from raven import Client as RavenClient
 
 raven_client = RavenClient(os.environ['SENTRY_DSN'])
 
@@ -29,6 +30,8 @@ def getMenu(queryDatabase = False):
             raven_client.captureMessage('Unable to fetch menu from rumobile')
 
     return latestMenu
+
+getMenu()
 
 def validGenre(genre):
     genre_lower = genre.lower()
