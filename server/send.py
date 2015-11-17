@@ -1,6 +1,7 @@
 from raven import Client
 import sendgrid
 import os
+import time
 
 client = Client(os.environ['SENTRY_DSN'])
 
@@ -19,16 +20,16 @@ def sendConfirmationEmail(user):
     message.set_html('Hi! <br><br> Please click the following link to confirm your email, ' + PRODUCTION_URL + 'ConfirmSubscriber?token=' + str(user['key']))
     message.set_from('IsItSteakNight')
     status, msg = sg.send(message)
-    print('email sent: ', status, msg)
 
     if(status is not 200):
-        client.context.merge({
+        client.user_context({
             'user': user,
             'status': status,
             'msg': msg
         })
-        client.captureMessage('Send confirmation email failed.')
-        client.captureException()
+        client.captureMessage('Send confirmation email failed')
         client.context.clear()
-
-    return (status, msg)
+        time.sleep(1) #bad...
+        return (status, msg)
+    else:
+        return (status, msg)
