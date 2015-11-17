@@ -16,6 +16,9 @@ db = client.isitsteaknight
 
 menus = db.menus
 
+lastRequestTime = 0
+lastFetchedMenu = ""
+
 def getMenu(queryDatabase = False):
     if queryDatabase:
         try:
@@ -23,15 +26,26 @@ def getMenu(queryDatabase = False):
         except:
             raven_client.captureMessage('Unable to get latest menu from mongodb')
     else:
-        try:
-            r = requests.get('https://rumobile.rutgers.edu/1/rutgers-dining.txt')
-            latestMenu = json.loads(r.text)
-        except:
-            raven_client.captureMessage('Unable to fetch menu from rumobile')
+        currentTime = time.time()
+        elapsed = currentTime - getMenu.lastRequestTime
+
+        if(elapsed > 60):
+            try:
+                r = requests.get('https://rumobile.rutgers.edu/1/rutgers-dining.txt')
+                latestMenu = json.loads(r.text)
+
+                #update cache
+                getMenu.lastRequestTime = time.time()
+                getMenu.lastFetchedMenu = latestMenu
+            except:
+                raven_client.captureMessage('Unable to fetch menu from rumobile')
+        else:
+            return getMenu.lastFetchedMenu
 
     return latestMenu
 
-getMenu()
+getMenu.lastRequestTime = 0
+getMenu.lastFetchedMenu = ""
 
 def validGenre(genre):
     genre_lower = genre.lower()
