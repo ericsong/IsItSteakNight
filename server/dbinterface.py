@@ -46,12 +46,13 @@ def tryCatchInsertQuery(query):
         cur.close()
 
         return True
-    except:
+    except Exception as e:
         raven_client.user_context({
             'query': query
         })
         raven_client.captureMessage('PostgreSQL INSERT query failed')
 
+        conn.rollback()
         cur.close()
         
         raise ValueError("PostgreSQL INSERT query failed")
@@ -84,7 +85,7 @@ def getSubscriberByKey(key):
     """)
     select_query = select_template.substitute(values)
 
-    return tryCatchSelectOneQuery(cur, select_query)
+    return tryCatchSelectOneQuery(select_query)
 
 def getSubscriberByEmail(email):
     """ Returns subscriber if exists """
@@ -98,7 +99,7 @@ def getSubscriberByEmail(email):
     """)
     select_query = select_template.substitute(values)
 
-    return tryCatchSelectOneQuery(cur, select_query)
+    return tryCatchSelectOneQuery(select_query)
 
 def subscriptionExists(email, query):
     """ Return if subscription exists or not """
@@ -151,7 +152,7 @@ def createSubscription(email, query):
         INSERT INTO "Subscription" (subscriber, query) VALUES ('$email', '$query')
     """)
     insert_query = insert_template.substitute(values)
-    result = tryCatchInsertQuery(cur, insert_query)
+    result = tryCatchInsertQuery(insert_query)
 
     return result
 
@@ -167,6 +168,6 @@ def updateSubscriberConfirmStatus(key, status):
         UPDATE "Subscriber" SET verified=$status WHERE key='$token'
     """)
     update_query = update_template.substitute(values)
-    return tryCatchInsertQuery(cur, update_query)
+    return tryCatchInsertQuery(update_query)
 
 
