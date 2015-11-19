@@ -69,29 +69,50 @@ def tryCatchInsertQuery(query):
 
 def getSubscription(email, query):
     """ Returns subscription if exists """
+
     values = {
         'email': email,
         'query': query
     }
+
     select_template = string.Template("""
         SELECT id from "Subscription" WHERE subscriber='$email' AND query='$query'
     """)
     select_query = select_template.substitute(values)
+
     return tryCatchSelectOneQuery(select_query)
 
 def getSubscriberByKey(key):
     """ Returns subscriber if exists """
+
     values = {
         'key': key
     }
+
     select_template = string.Template("""
         SELECT email from "Subscriber" WHERE key='$key'
     """)
     select_query = select_template.substitute(values)
+
+    return tryCatchSelectOneQuery(cur, select_query)
+
+def getSubscriberByEmail(email):
+    """ Returns subscriber if exists """
+
+    values = {
+        'email': email
+    }
+
+    select_template = string.Template("""
+        SELECT email from "Subscriber" WHERE email='$email'
+    """)
+    select_query = select_template.substitute(values)
+
     return tryCatchSelectOneQuery(cur, select_query)
 
 def subscriptionExists(email, query):
     """ Return if subscription exists or not """
+
     result = getSubscription(email, query)
     
     if result is not None:
@@ -101,6 +122,7 @@ def subscriptionExists(email, query):
 
 def subscriberExists(key):
     """ Return if subscriber exists or not """
+
     result = getSubscriberByKey(key)
 
     if result is not None:
@@ -110,10 +132,12 @@ def subscriberExists(key):
 
 def createSubscriber(email):
     """ Create a subscriber and add to database. Return his unique key """
+
     values = {
         'email': email,
         'key': uuid.uuid4(),
     }
+
     insert_template = string.Template("""
         INSERT INTO "Subscriber" (email, key) VALUES ('$email', '$key')
     """)
@@ -127,10 +151,12 @@ def createSubscriber(email):
 
 def createSubscription(email, query):
     """ Create a subscription and add to database. Return unique id if successful """
+
     values = {
         'email':  email,
         'query': query
     }
+
     insert_template = string.Template("""
         INSERT INTO "Subscription" (subscriber, query) VALUES ('$email', '$query')
     """)
@@ -237,43 +263,26 @@ def addSubscriber():
     except:
         return failureMessage("An error has occurred. Please try again later.")
 
-    #Execute query to check if subscriber already exists
-    select_template = string.Template("""
-        SELECT email from "Subscriber" WHERE email='$email'
-    """)
-    select_query = select_template.substitute(values)
-    result = tryCatchSelectOneQuery(cur, select_query)
+    # Check if subscriber exists
+    try:
+        if getSubscriberByEmail(email) is None:
+            # Create new user
+            newUserKey = createSubscriber(email)
 
-    if result == "error":
-        return jsonify({
-            'message': "An error has occurred. Please try again later.",
-            'status': "failure"
-        })
-
-    if result is None:
-        # Create new user
-        newUserKey = createSubscriber(email)
-
-        if newUserKey is None:
-            return jsonify({
-                'message': "An error has occurred. Please try again later.",
-                'status': "failure"
-            })
-        else:
-            sendConfirmationEmail(values)
+            if newUserKey is None:
+                return failureMessage("An error has occurred. Please try again later.")
+            else:
+                sendConfirmationEmail(values)
+    except:
+        return failureMessaeg("An error has occurred. Please try again later.")
 
     # Create subscription
-    subscriptionId = createSubscription(email, query)
-    if subscriptionId is None:
-        return jsonify({
-            'message': "An error has occurred. Please try again later.",
-            'status': "failure"
-        })
+    try:
+        createSubscription(email, query)
+    except:
+        return failureMessage("An error has occurred. Please try again later.")
 
-    return jsonify({
-        'message': "success",
-        'status': "success"
-    })
+    return successMessage("success", "success")
 
 @app.route('/MenuData')
 def sendMenuData():
