@@ -1,7 +1,7 @@
 import string
 import threading
 import re
-import dbinterface
+from dbinterface import *
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from analyzer import isTonightSteakNight, getMenu
 from send import sendConfirmationEmail
@@ -94,23 +94,27 @@ def addSubscriber():
 
     # Check if subscription already exists
     try:
-        if subscriptionExists(email, query):
-            return failureMessaeg("You're already subscribed for this item!")
+        subExists = subscriptionExists(email, query)
     except:
         return failureMessage("An error has occurred. Please try again later.")
 
+    if subExists:
+        return failureMessage("You're already subscribed for this item!")
+
     # Check if subscriber exists
     try:
-        if getSubscriberByEmail(email) is None:
-            # Create new user
-            newUserKey = createSubscriber(email)
-
-            if newUserKey is None:
-                return failureMessage("An error has occurred. Please try again later.")
-            else:
-                sendConfirmationEmail(values)
+        subscriber = getSubscriberByEmail(email)
     except:
-        return failureMessaeg("An error has occurred. Please try again later.")
+        return failureMessage("An error has occurred. Please try again later.")
+
+    if subscriber is None:
+        # Create new user
+        try:
+            newUserKey = createSubscriber(email)
+        except:
+            return failureMessage("An error has occurred. Please try again later.")
+
+        sendConfirmationEmail(email, query, newUserKey)
 
     # Create subscription
     try:
@@ -118,7 +122,7 @@ def addSubscriber():
     except:
         return failureMessage("An error has occurred. Please try again later.")
 
-    return successMessage("success", "success")
+    return successMessage("success")
 
 @app.route('/MenuData')
 def sendMenuData():

@@ -35,7 +35,6 @@ def tryCatchSelectOneQuery(query):
         cur.close()
 
         raise ValueError("PostgreSQL SELECT query failed")
-        return None
 
 def tryCatchInsertQuery(query):
     cur = conn.cursor()
@@ -56,7 +55,6 @@ def tryCatchInsertQuery(query):
         cur.close()
         
         raise ValueError("PostgreSQL INSERT query failed")
-        return None
 
 def getSubscription(email, query):
     """ Returns subscription if exists """
@@ -71,7 +69,10 @@ def getSubscription(email, query):
     """)
     select_query = select_template.substitute(values)
 
-    return tryCatchSelectOneQuery(select_query)
+    try:
+        return tryCatchSelectOneQuery(select_query)
+    except:
+        raise ValueError("Get subscription failed")
 
 def getSubscriberByKey(key):
     """ Returns subscriber if exists """
@@ -85,7 +86,10 @@ def getSubscriberByKey(key):
     """)
     select_query = select_template.substitute(values)
 
-    return tryCatchSelectOneQuery(select_query)
+    try:
+        return tryCatchSelectOneQuery(select_query)
+    except:
+        raise ValueError("Get subscriber by key failed")
 
 def getSubscriberByEmail(email):
     """ Returns subscriber if exists """
@@ -99,27 +103,36 @@ def getSubscriberByEmail(email):
     """)
     select_query = select_template.substitute(values)
 
-    return tryCatchSelectOneQuery(select_query)
+    try:
+        return tryCatchSelectOneQuery(select_query)
+    except:
+        raise ValueError("Get subscriber by email failed")
 
 def subscriptionExists(email, query):
     """ Return if subscription exists or not """
 
-    result = getSubscription(email, query)
-    
-    if result is not None:
-        return True
-    else:
+    try:
+        result = getSubscription(email, query)
+    except:
+        raise ValueError("Checking for subscription failed")
+
+    if result is None:
         return False
+    else:
+        return True
 
 def subscriberExists(key):
     """ Return if subscriber exists or not """
 
-    result = getSubscriberByKey(key)
+    try:
+        result = getSubscriberByKey(key)
+    except:
+        raise ValueError("Checking for subscriber failed")
 
-    if result is not None:
-        return True
-    else:
+    if result is None:
         return False
+    else:
+        return True
 
 def createSubscriber(email):
     """ Create a subscriber and add to database. Return his unique key """
@@ -133,12 +146,13 @@ def createSubscriber(email):
         INSERT INTO "Subscriber" (email, key) VALUES ('$email', '$key')
     """)
     insert_query = insert_template.substitute(values)
-    result = tryCatchInsertQuery(insert_query)
 
-    if result is not None:
-        return values['key']
-    else:
-        return None
+    try:
+        result = tryCatchInsertQuery(insert_query)
+    except:
+        raise ValueError("Create subscriber failed")
+
+    return values['key']
 
 def createSubscription(email, query):
     """ Create a subscription and add to database. Return unique id if successful """
