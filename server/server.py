@@ -27,31 +27,146 @@ status = {
     'isSteakNight': False
 }
 
-def tryCatchSelectOneQuery(cur, query):
+def tryCatchSelectOneQuery(query):
+    cur = conn.cursor()
+
     try:
         cur.execute(query)
         doc = cur.fetchone()
+
+        cur.close()
         return doc
     except:
         raven_client.user_context({
             'query': query
         })
         raven_client.captureMessage('PostgreSQL SELECT query failed')
-        return "error"
 
-def tryCatchInsertQuery(cur, query):
+        cur.close()
+
+        raise ValueError("PostgreSQL SELECT query failed")
+        return None
+
+def tryCatchInsertQuery(query):
+    cur = conn.cursor()
+
     try:
         cur.execute(query)
         conn.commit()
+        cur.close()
+
+        return True
     except:
         raven_client.user_context({
             'query': query
         })
         raven_client.captureMessage('PostgreSQL INSERT query failed')
-        return "error"
+
+        cur.close()
+        
+        raise ValueError("PostgreSQL INSERT query failed")
+        return None
+
+def getSubscription(email, query):
+    """ Returns subscription if exists """
+    values = {
+        'email': email,
+        'query': query
+    }
+    select_template = string.Template("""
+        SELECT id from "Subscription" WHERE subscriber='$email' AND query='$query'
+    """)
+    select_query = select_template.substitute(values)
+    return tryCatchSelectOneQuery(select_query)
+
+def getSubscriberByKey(key):
+    """ Returns subscriber if exists """
+    values = {
+        'key': key
+    }
+    select_template = string.Template("""
+        SELECT email from "Subscriber" WHERE key='$key'
+    """)
+    select_query = select_template.substitute(values)
+    return tryCatchSelectOneQuery(cur, select_query)
+
+def subscriptionExists(email, query):
+    """ Return if subscription exists or not """
+    result = getSubscription(email, query)
+    
+    if result is not None:
+        return True
+    else:
+        return False
+
+def subscriberExists(key):
+    """ Return if subscriber exists or not """
+    result = getSubscriberByKey(key)
+
+    if result is not None:
+        return True
+    else:
+        return False
+
+def createSubscriber(email):
+    """ Create a subscriber and add to database. Return his unique key """
+    values = {
+        'email': email,
+        'key': uuid.uuid4(),
+    }
+    insert_template = string.Template("""
+        INSERT INTO "Subscriber" (email, key) VALUES ('$email', '$key')
+    """)
+    insert_query = insert_template.substitute(values)
+    result = tryCatchInsertQuery(insert_query)
+
+    if result is not None:
+        return values['key']
+    else:
+        return None
+
+def createSubscription(email, query):
+    """ Create a subscription and add to database. Return unique id if successful """
+    values = {
+        'email':  email,
+        'query': query
+    }
+    insert_template = string.Template("""
+        INSERT INTO "Subscription" (subscriber, query) VALUES ('$email', '$query')
+    """)
+    insert_query = insert_template.substitute(values)
+    result = tryCatchInsertQuery(cur, insert_query)
+
+    return result
+
+def updateSubscriberConfirmStatus(key, status):
+    """ Set subscriber with key of key as confirmed """
+
+    values = {
+        'key': key,
+        'status': status
+    }
+
+    update_template = string.Template("""
+        UPDATE "Subscriber" SET verified=$status WHERE key='$token'
+    """)
+    update_query = update_template.substitute(values)
+    return tryCatchInsertQuery(cur, update_query)
 
 def validEmail(email):
     return pattern.match(email)
+
+def successMessage(msg):
+    return jsonify({
+        'message': msg,
+        'status': "success"
+    })
+
+def failureMessage(msg):
+    return jsonify({
+        'message': msg,
+        'status': "failure"
+    })
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -82,100 +197,45 @@ def root():
 
 @app.route('/ConfirmSubscriber/')
 def confirmSubscriber():
-    cur = conn.cursor()
     token = request.args.get('token')
 
-    values = {
-        'token': token
-    }
-
-    #Execute query to check if subscription already exists
-    select_template = string.Template("""
-        SELECT email from "Subscriber" WHERE key='$token'
-    """)
-    select_query = select_template.substitute(values)
-    result = tryCatchSelectOneQuery(cur, select_query)
-
-    if result is not None and result != "error":
-        update_template = string.Template("""
-            UPDATE "Subscriber" SET verified=True WHERE key='$token'
-        """)
-        update_query = update_template.substitute(values)
-        tryCatchInsertQuery(cur, update_query)
-
-        cur.close()
-        return render_template('confirmed.html')
-    else:
-        cur.close()
+    # Check if key is linked to a user
+    try:
+        if subscriberExists(token) and updateSubscriberConfirmStatus(token, True):
+            return render_template('confirmed.html')
+        else:
+            return render_template('unconfirmed.html')
+    except:
         return render_template('unconfirmed.html')
 
 @app.route('/unsubscribe/')
 def unsubscribe():
-    cur = conn.cursor()
     token = request.args.get('token')
 
-    values = {
-        'token': token
-    }
-
-    #Execute query to check if subscription already exists
-    select_template = string.Template("""
-        SELECT email from "Subscriber" WHERE key='$token'
-    """)
-    select_query = select_template.substitute(values)
-    result = tryCatchSelectOneQuery(cur, select_query)
-
-    if result is not None and result != "error":
-        update_template = string.Template("""
-            UPDATE "Subscriber" SET active=False WHERE key='$token'
-        """)
-        update_query = update_template.substitute(values)
-        tryCatchInsertQuery(cur, update_query)
-
-        cur.close()
-        return render_template('unsubscribe.html')
-    else:
-        cur.close()
+    # Check if key is linked to a user
+    try:
+        if subscriberExists(token) and updateSubscriberConfirmStatus(token, False):
+            return render_template('unsubscribe.html')
+        else:
+            return render_template('unsubfailed.html')
+    except:
         return render_template('unsubfailed.html')
-
 
 @app.route('/subscribe', methods=['POST'])
 def addSubscriber():
-    cur = conn.cursor()
     email = request.form.get('email')
-    query = request.form.get('query')
-    query = query.lower()
+    query = request.form.get('query').lower()
 
-    values = {
-        'email': email,
-        'query': query
-    }
-
+    # Check if email is somewhat valid (regex)
     if not validEmail(email):
-        return jsonify({
-            'message': "Invalid email",
-            'status': "failure" 
-        })
+        return failureMessage("Invalid email")
 
-    #Execute query to check if subscription already exists
-    select_template = string.Template("""
-        SELECT id from "Subscription" WHERE subscriber='$email' AND query='$query'
-    """)
-    select_query = select_template.substitute(values)
-    result = tryCatchSelectOneQuery(cur, select_query)
-
-    if result == "error":
-        return jsonify({
-            'message': "An error has occurred. Please try again later.",
-            'status': "failure"
-        })
-
-    if result is not None:
-        cur.close()
-        return jsonify({
-            'message': "You're already subscribed for this item!",
-            'status': "failure"
-        })
+    # Check if subscription already exists
+    try:
+        if subscriptionExists(email, query):
+            return failureMessaeg("You're already subscribed for this item!")
+    except:
+        return failureMessage("An error has occurred. Please try again later.")
 
     #Execute query to check if subscriber already exists
     select_template = string.Template("""
@@ -191,34 +251,25 @@ def addSubscriber():
         })
 
     if result is None:
-        values['key'] = uuid.uuid4()
+        # Create new user
+        newUserKey = createSubscriber(email)
 
-        #Create new user
-        insert_template = string.Template("""
-            INSERT INTO "Subscriber" (email, key) VALUES ('$email', '$key')
-        """)
-        insert_query = insert_template.substitute(values)
-        tryCatchInsertQuery(cur, insert_query)
-        if result == "error":
+        if newUserKey is None:
             return jsonify({
                 'message': "An error has occurred. Please try again later.",
                 'status': "failure"
             })
+        else:
+            sendConfirmationEmail(values)
 
-        sendConfirmationEmail(values)
-
-    insert_template = string.Template("""
-        INSERT INTO "Subscription" (subscriber, query) VALUES ('$email', '$query')
-    """)
-    insert_query = insert_template.substitute(values)
-    tryCatchInsertQuery(cur, insert_query)
-    if result == "error":
+    # Create subscription
+    subscriptionId = createSubscription(email, query)
+    if subscriptionId is None:
         return jsonify({
             'message': "An error has occurred. Please try again later.",
             'status': "failure"
         })
 
-    cur.close()
     return jsonify({
         'message': "success",
         'status': "success"
