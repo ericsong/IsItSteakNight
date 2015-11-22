@@ -108,6 +108,9 @@ def getSubscriberByEmail(email):
     except:
         raise ValueError("Get subscriber by email failed")
 
+def getNumberOfSubscriberItems(email):
+    """ Return number of items subscriber with email of `email` currently is tracking """
+
 def subscriptionExists(email, query):
     """ Return if subscription exists or not """
 

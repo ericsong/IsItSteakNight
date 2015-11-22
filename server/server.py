@@ -105,7 +105,7 @@ def addSubscriber():
 
     # Check if max number of items have been reached
     try:
-        numItems = subscriberItems(email)
+        numItems = getNumberOfSubscriberItems(email)
         if numItems >= MAX_NUM_ITEMS:
             return failureMessage("You are already at the max number of items. If you want to track more than 30 items, please email eric.song@rutgers.edu")
     except:
