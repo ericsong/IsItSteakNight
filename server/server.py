@@ -11,6 +11,8 @@ app.debug = True
 
 pattern = re.compile(".+@.+\..+")
 
+MAX_NUM_ITEMS = 30
+
 status = {
     'isSteakNight': False
 }
@@ -100,6 +102,14 @@ def addSubscriber():
 
     if subExists:
         return failureMessage("You're already subscribed for this item!")
+
+    # Check if max number of items have been reached
+    try:
+        numItems = subscriberItems(email)
+        if numItems >= MAX_NUM_ITEMS:
+            return failureMessage("You are already at the max number of items. If you want to track more than 30 items, please email eric.song@rutgers.edu")
+    except:
+        return failureMessage("An error has occurred. Please try again later.")
 
     # Check if subscriber exists
     try:
