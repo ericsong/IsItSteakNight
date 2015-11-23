@@ -111,6 +111,20 @@ def getSubscriberByEmail(email):
 def getNumberOfSubscriberItems(email):
     """ Return number of items subscriber with email of `email` currently is tracking """
 
+    values = {
+        'email': email
+    }
+
+    select_template = string.Template("""
+        SELECT COUNT(*) from "Subscription" WHERE subscriber='$email'
+    """)
+    select_query = select_template.substitute(values)
+
+    try:
+        return tryCatchSelectOneQuery(select_query)[0]
+    except:
+        raise ValueError("Get subscriber by email failed")
+
 def subscriptionExists(email, query):
     """ Return if subscription exists or not """
 
