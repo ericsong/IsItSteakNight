@@ -27,10 +27,16 @@ $(document).ready(function() {
         }
     }, 500)
 
+    $(document).bind("keydown", function(e) {
+        if(e.keyCode == 13) {
+            return false;
+        }
+    });
+
     document.getElementById('item-desc').addEventListener("input", function(e) {
         currentQuery = $('#item-desc').text()
         $('#email-query').text(currentQuery.toUpperCase());
-        setNewItems(currentQuery);       
+        setNewItems(currentQuery);
     });
 
     $('form').submit(function(e) {
