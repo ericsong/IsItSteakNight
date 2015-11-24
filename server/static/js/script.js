@@ -62,7 +62,7 @@ $(document).ready(function() {
                     messageDiv.removeClass().addClass('failure');
                 }
 
-                IISN_APP.removeTime = new Date().getTime() + 5000; // convert to constant
+                IISN_APP.removeTime = new Date().getTime() + data.time*1000; // convert to constant
             }
         });
 

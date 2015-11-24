@@ -20,16 +20,18 @@ status = {
 def validEmail(email):
     return pattern.match(email)
 
-def successMessage(msg):
+def successMessage(msg, time=5):
     return jsonify({
         'message': msg,
-        'status': "success"
+        'status': "success",
+        'time': time
     })
 
-def failureMessage(msg):
+def failureMessage(msg, time=5):
     return jsonify({
         'message': msg,
-        'status': "failure"
+        'status': "failure",
+        'time': time
     })
 
 def set_interval(func, sec):
@@ -107,7 +109,7 @@ def addSubscriber():
     try:
         numItems = getNumberOfSubscriberItems(email)
         if numItems >= MAX_NUM_ITEMS:
-            return failureMessage("You are already at the max number of items. If you want to track more than 30 items, please email eric.song@rutgers.edu")
+            return failureMessage("You are already at the max number of items. If you want to track more than 30 items, please email eric.song@rutgers.edu", 10)
     except:
         return failureMessage("An error has occurred. Please try again later.")
 

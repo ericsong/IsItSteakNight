@@ -118,26 +118,18 @@ $(document).ready(function() {
         }
     }, 500)
 
+    $(document).bind("keydown", function(e) {
+        if(e.keyCode == 13) {
+            return false;
+        }
+    });
+
     document.getElementById('item-desc').addEventListener("input", function(e) {
         currentQuery = $('#item-desc').text()
         $('#email-query').text(currentQuery.toUpperCase());
-        setNewItems(currentQuery);       
+        setNewItems(currentQuery);
     });
-/*
-    $("#item-desc").keypress(
-        function(e){
-            if(e.which == 13) {
-                currentQuery = $('#item-desc').text();
-                $('#email-query').text(currentQuery.toUpperCase());
-                setNewItems(currentQuery);
 
-                return false;
-            } else {
-                return true;
-            }
-        }
-    );
-*/
     $('form').submit(function(e) {
         $.ajax({
             url: '/subscribe',
@@ -161,7 +153,7 @@ $(document).ready(function() {
                     messageDiv.removeClass().addClass('failure');
                 }
 
-                IISN_APP.removeTime = new Date().getTime() + 5000; // convert to constant
+                IISN_APP.removeTime = new Date().getTime() + data.time*1000; // convert to constant
             }
         });
 
