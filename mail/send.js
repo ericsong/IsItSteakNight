@@ -90,6 +90,8 @@ function sendEmails(email, token, items, query) {
             return console.error(err)
         }
 
+        client.querySync(`INSERT INTO "Email" ("to", "subject", "body") VALUES ('${email}', '${subject}', '${html}')`);
+
         console.log(json)
     });
 }
@@ -147,6 +149,8 @@ function sendMultiQueryEmail(email, token, items, queries) {
             console.error(subject)
             return console.error(err)
         }
+
+        client.querySync(`INSERT INTO "Email" (to, subject, body) VALUES ('${email}', '${subject}', '${html}')`);
 
         console.log(json)
     });

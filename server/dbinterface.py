@@ -196,7 +196,7 @@ def updateSubscriberConfirmStatus(key, status):
     }
 
     update_template = string.Template("""
-        UPDATE "Subscriber" SET verified=$status WHERE key='$token'
+        UPDATE "Subscriber" SET verified=$status WHERE key='$key'
     """)
     update_query = update_template.substitute(values)
     return tryCatchInsertQuery(update_query)
