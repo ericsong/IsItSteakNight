@@ -1,5 +1,7 @@
 var getMatchingItems = require('./analyzer');
 
+var MESSAGE_DURATION = 1500;
+
 var IISN_APP = {}
 
 function shake(div) {
@@ -27,7 +29,7 @@ $(document).ready(function() {
         }
     }, 500)
 
-    $(document).bind("keydown", function(e) {
+    $('#item-desc').bind("keydown", function(e) {
         if(e.keyCode == 13) {
             return false;
         }
@@ -62,7 +64,7 @@ $(document).ready(function() {
                     messageDiv.removeClass().addClass('failure');
                 }
 
-                IISN_APP.removeTime = new Date().getTime() + data.time*1000; // convert to constant
+                IISN_APP.removeTime = new Date().getTime() + data.time*MESSAGE_DURATION;
             }
         });
 

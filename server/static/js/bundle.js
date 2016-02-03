@@ -118,7 +118,7 @@ $(document).ready(function() {
         }
     }, 500)
 
-    $(document).bind("keydown", function(e) {
+    $('#item-desc').bind("keydown", function(e) {
         if(e.keyCode == 13) {
             return false;
         }
