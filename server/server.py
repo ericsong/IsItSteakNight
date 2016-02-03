@@ -20,14 +20,14 @@ status = {
 def validEmail(email):
     return pattern.match(email)
 
-def successMessage(msg, time=5):
+def createSuccessMessage(msg, time=5):
     return jsonify({
         'message': msg,
         'status': "success",
         'time': time
     })
 
-def failureMessage(msg, time=5):
+def createFailureMessage(msg, time=5):
     return jsonify({
         'message': msg,
         'status': "failure",
@@ -91,50 +91,52 @@ def unsubscribe():
 def addSubscriber():
     email = request.form.get('email')
     query = request.form.get('query').lower()
+    successMessage = "Success!"
 
     # Check if email is somewhat valid (regex)
     if not validEmail(email):
-        return failureMessage("Invalid email")
+        return createFailureMessage("Invalid email")
 
     # Check if subscription already exists
     try:
         subExists = subscriptionExists(email, query)
     except:
-        return failureMessage("An error has occurred. Please try again later.")
+        return createFailureMessage("An error has occurred. Please try again later.")
 
     if subExists:
-        return failureMessage("You're already subscribed for this item!")
+        return createFailureMessage("You're already subscribed for this item!")
 
     # Check if max number of items have been reached
     try:
         numItems = getNumberOfSubscriberItems(email)
         if numItems >= MAX_NUM_ITEMS:
-            return failureMessage("You are already at the max number of items. If you want to track more than 30 items, please email eric.song@rutgers.edu", 10)
+            return createFailureMessage("You are already at the max number of items. If you want to track more than 30 items, please email eric.song@rutgers.edu", 10)
     except:
-        return failureMessage("An error has occurred. Please try again later.")
+        return createFailureMessage("An error has occurred. Please try again later.")
 
     # Check if subscriber exists
     try:
         subscriber = getSubscriberByEmail(email)
     except:
-        return failureMessage("An error has occurred. Please try again later.")
+        return createFailureMessage("An error has occurred. Please try again later.")
 
     if subscriber is None:
         # Create new user
         try:
             newUserKey = createSubscriber(email)
         except:
-            return failureMessage("An error has occurred. Please try again later.")
+            return createFailureMessage("An error has occurred. Please try again later.")
 
+        successMessage = successMessage + " A confirmation email has been sent."
         sendConfirmationEmail(email, query, newUserKey)
 
     # Create subscription
     try:
         createSubscription(email, query)
     except:
-        return failureMessage("An error has occurred. Please try again later.")
+        return createFailureMessage("An error has occurred. Please try again later.")
 
-    return successMessage("success")
+    return createSuccessMessage(successMessage)
 
 @app.route('/MenuData')
 def sendMenuData():
