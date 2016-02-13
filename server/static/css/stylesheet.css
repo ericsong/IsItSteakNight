@@ -40,6 +40,7 @@ form {
 
 #submit-message {
     float: left;
+    width: 80%;
     text-align: left;
     margin-top: 10px;
     font-size: 14;
