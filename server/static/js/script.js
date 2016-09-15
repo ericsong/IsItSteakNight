@@ -36,8 +36,10 @@ $(document).ready(function() {
     });
 
     document.getElementById('item-desc').addEventListener("input", function(e) {
-        currentQuery = $('#item-desc').text()
-        $('#email-query').text(currentQuery.toUpperCase());
+        currentQuery = $('#item-desc').text();
+        $('.email-query').each(function() {
+            $(this).text(currentQuery.toUpperCase())
+        });
         setNewItems(currentQuery);
     });
 

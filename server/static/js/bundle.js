@@ -91,6 +91,8 @@ module.exports = getMatchingItems;
 },{}],2:[function(require,module,exports){
 var getMatchingItems = require('./analyzer');
 
+var MESSAGE_DURATION = 1500;
+
 var IISN_APP = {}
 
 function shake(div) {
@@ -125,8 +127,10 @@ $(document).ready(function() {
     });
 
     document.getElementById('item-desc').addEventListener("input", function(e) {
-        currentQuery = $('#item-desc').text()
-        $('#email-query').text(currentQuery.toUpperCase());
+        currentQuery = $('#item-desc').text();
+        $('.email-query').each(function() {
+            $(this).text(currentQuery.toUpperCase())
+        });
         setNewItems(currentQuery);
     });
 
@@ -153,7 +157,7 @@ $(document).ready(function() {
                     messageDiv.removeClass().addClass('failure');
                 }
 
-                IISN_APP.removeTime = new Date().getTime() + data.time*1000; // convert to constant
+                IISN_APP.removeTime = new Date().getTime() + data.time*MESSAGE_DURATION;
             }
         });
 
