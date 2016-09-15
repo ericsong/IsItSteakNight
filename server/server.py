@@ -4,7 +4,7 @@ import re
 from dbinterface import *
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from analyzer import isTonightSteakNight, getMenu
-from send import sendConfirmationEmail
+from send import sendConfirmationEmail, tellEricSomeoneSignedUp
 
 app = Flask(__name__, static_url_path='')
 app.debug = True
@@ -124,6 +124,7 @@ def addSubscriber():
         # Create new user
         try:
             newUserKey = createSubscriber(email)
+            tellEricSomeoneSignedUp(email)
         except:
             return createFailureMessage("An error has occurred. Please try again later.")
 

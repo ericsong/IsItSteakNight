@@ -13,6 +13,14 @@ sg = sendgrid.SendGridClient(sg_user, sg_pass)
 TEST_URL = 'http://localhost:5000/'
 PRODUCTION_URL = 'http://isitsteaknight.com/'
 
+def tellEricSomeoneSignedUp(email):
+    message = senggrid.Mail()
+    message.add_to('eric.song@rutgers.edu')
+    message.set_subject('Someone signed up for IsItSteakNight: ' + email)
+    message.set_html(email + ' signed up. wooo')
+    message.set_from('IsItSteakNight')
+    status, msg = sg.send(message)
+
 def sendConfirmationEmail(email, query, key):
     user = {
         'email': email,
